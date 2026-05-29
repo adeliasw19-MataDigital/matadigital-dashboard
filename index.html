@@ -359,7 +359,7 @@
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── Detail API Key cards (NEW) ──────────────────────────── */
+    /* ── Detail API Key cards ──────────────────────────── */
     .detail-key-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -402,9 +402,13 @@
       font-size: 13px; font-weight: 700;
       flex-shrink: 0;
     }
-    .dkc-icon-gemini  { background: #0d2236; color: #00e5ff; border: 1px solid #0e3a56; }
-    .dkc-icon-clarifai{ background: #200d36; color: #b060ff; border: 1px solid #38165c; }
-    .dkc-icon-claude  { background: #241500; color: #ff9800; border: 1px solid #3d2300; }
+
+    /* Gemini — biru cyan */
+    .dkc-icon-gemini     { background: #0d2236; color: #00e5ff; border: 1px solid #0e3a56; }
+    /* Hugging Face — kuning amber */
+    .dkc-icon-huggingface{ background: #1f1800; color: #ffcc00; border: 1px solid #3d3000; }
+    /* Sightengine — hijau teal */
+    .dkc-icon-sightengine{ background: #001f1a; color: #00d4aa; border: 1px solid #003d32; }
 
     .dkc-sub {
       font-size: 0.68rem;
@@ -442,10 +446,12 @@
       border-radius: 999px;
       transition: width 0.6s ease;
     }
-    .dkc-fill-gemini  { background: #00c8e0; }
-    .dkc-fill-clarifai{ background: #9b4dff; }
-    .dkc-fill-claude  { background: #ff9800; }
-    .dkc-fill-zero    { background: #252540; }
+
+    /* Bar fill colors per provider */
+    .dkc-fill-gemini      { background: #00c8e0; }
+    .dkc-fill-huggingface { background: #ffcc00; }
+    .dkc-fill-sightengine { background: #00d4aa; }
+    .dkc-fill-zero        { background: #252540; }
 
     .dkc-key-val {
       font-family: var(--font-mono);
@@ -535,7 +541,7 @@
     <div class="loading-state"><div class="spinner"></div> Memuat notifikasi...</div>
   </div>
 
-  <!-- ── Detail API Key (NEW — 3 card sejajar) ───────────────── -->
+  <!-- ── Detail API Key (Gemini · Hugging Face · Sightengine) ── -->
   <div class="section-label">Detail API Key</div>
   <div class="detail-key-grid" id="detail-key-grid">
     <div class="loading-state"><div class="spinner"></div> Memuat data key...</div>
@@ -619,7 +625,8 @@ function processFirebaseData(logs) {
     daily.push({ date: key, count: dailyMap[key] || 0 });
   }
 
-  const providers = ['gemini', 'clarifai', 'claude'].map(name => {
+  // Provider list diupdate: gemini, huggingface, sightengine
+  const providers = ['gemini', 'huggingface', 'sightengine'].map(name => {
     const s = apiStatus[name] || {};
     return {
       name, status: s.lastStatus || 'idle',
@@ -628,18 +635,16 @@ function processFirebaseData(logs) {
     };
   });
 
-  // Kumpulkan keys per provider
   const allKeys = {
-    gemini:   (apiStatus.gemini   || {}).keys || {},
-    clarifai: (apiStatus.clarifai || {}).keys || {},
-    claude:   (apiStatus.claude   || {}).keys || {},
+    gemini:       (apiStatus.gemini       || {}).keys || {},
+    huggingface:  (apiStatus.huggingface  || {}).keys || {},
+    sightengine:  (apiStatus.sightengine  || {}).keys || {},
   };
 
   return {
     todayCount, monthCount, activeProviders,
     successRate: totalCount ? Math.round((successCount / Object.keys(apiStatus).length || 0) * 100) : 0,
     daily, providers, providerCount, allKeys,
-    geminiKeys: (apiStatus.gemini || {}).keys || {},
   };
 }
 
@@ -654,15 +659,48 @@ function getDemoData() {
     todayCount: 23, monthCount: 412, activeProviders: 2, successRate: 94,
     daily,
     providers: [
-      { name: 'gemini',   status: 'success', total: 210, lastUsed: '2026-05-29 11:10:00', error: null, countToday: 15 },
-      { name: 'clarifai', status: 'error',   total: 145, lastUsed: '2026-05-29 10:55:00', error: 'Rate limit exceeded', countToday: 5 },
-      { name: 'claude',   status: 'success', total: 57,  lastUsed: '2026-05-29 11:05:00', error: null, countToday: 3 },
+      { name: 'gemini',      status: 'success', total: 210, lastUsed: '2026-05-29 11:10:00', error: null,                   countToday: 15 },
+      { name: 'huggingface', status: 'error',   total: 145, lastUsed: '2026-05-29 10:55:00', error: 'Rate limit exceeded',  countToday: 5  },
+      { name: 'sightengine', status: 'success', total: 57,  lastUsed: '2026-05-29 11:05:00', error: null,                   countToday: 3  },
     ],
-    providerCount: { gemini: 15, clarifai: 5, claude: 3 },
+    providerCount: { gemini: 15, huggingface: 5, sightengine: 3 },
     allKeys: {
-      gemini:   { key_1: { usedToday: 8, limitPerDay: 20 }, key_2: { usedToday: 3, limitPerDay: 20 }, key_3: { usedToday: 1, limitPerDay: 20 }, key_4: { usedToday: 0, limitPerDay: 20 }, key_5: { usedToday: 0, limitPerDay: 20 }, key_6: { usedToday: 0, limitPerDay: 20 }, key_7: { usedToday: 0, limitPerDay: 20 }, key_8: { usedToday: 0, limitPerDay: 20 }, key_9: { usedToday: 0, limitPerDay: 20 }, key_10: { usedToday: 0, limitPerDay: 20 } },
-      clarifai: { key_1: { usedToday: 0, limitPerDay: 1000 }, key_2: { usedToday: 0, limitPerDay: 1000 }, key_3: { usedToday: 0, limitPerDay: 1000 }, key_4: { usedToday: 0, limitPerDay: 1000 }, key_5: { usedToday: 0, limitPerDay: 1000 }, key_6: { usedToday: 0, limitPerDay: 1000 }, key_7: { usedToday: 0, limitPerDay: 1000 }, key_8: { usedToday: 0, limitPerDay: 1000 }, key_9: { usedToday: 0, limitPerDay: 1000 }, key_10: { usedToday: 0, limitPerDay: 1000 } },
-      claude:   { key_1: { usedToday: 0, limitPerDay: 100 }, key_2: { usedToday: 0, limitPerDay: 100 }, key_3: { usedToday: 0, limitPerDay: 100 }, key_4: { usedToday: 0, limitPerDay: 100 }, key_5: { usedToday: 0, limitPerDay: 100 }, key_6: { usedToday: 0, limitPerDay: 100 }, key_7: { usedToday: 0, limitPerDay: 100 }, key_8: { usedToday: 0, limitPerDay: 100 }, key_9: { usedToday: 0, limitPerDay: 100 }, key_10: { usedToday: 0, limitPerDay: 100 } },
+      gemini: {
+        key_1:  { usedToday: 8,  limitPerDay: 20 },
+        key_2:  { usedToday: 3,  limitPerDay: 20 },
+        key_3:  { usedToday: 1,  limitPerDay: 20 },
+        key_4:  { usedToday: 0,  limitPerDay: 20 },
+        key_5:  { usedToday: 0,  limitPerDay: 20 },
+        key_6:  { usedToday: 0,  limitPerDay: 20 },
+        key_7:  { usedToday: 0,  limitPerDay: 20 },
+        key_8:  { usedToday: 0,  limitPerDay: 20 },
+        key_9:  { usedToday: 0,  limitPerDay: 20 },
+        key_10: { usedToday: 0,  limitPerDay: 20 },
+      },
+      huggingface: {
+        key_1:  { usedToday: 320, limitPerDay: 1000 },
+        key_2:  { usedToday: 150, limitPerDay: 1000 },
+        key_3:  { usedToday: 0,   limitPerDay: 1000 },
+        key_4:  { usedToday: 0,   limitPerDay: 1000 },
+        key_5:  { usedToday: 0,   limitPerDay: 1000 },
+        key_6:  { usedToday: 0,   limitPerDay: 1000 },
+        key_7:  { usedToday: 0,   limitPerDay: 1000 },
+        key_8:  { usedToday: 0,   limitPerDay: 1000 },
+        key_9:  { usedToday: 0,   limitPerDay: 1000 },
+        key_10: { usedToday: 0,   limitPerDay: 1000 },
+      },
+      sightengine: {
+        key_1:  { usedToday: 45, limitPerDay: 500 },
+        key_2:  { usedToday: 12, limitPerDay: 500 },
+        key_3:  { usedToday: 0,  limitPerDay: 500 },
+        key_4:  { usedToday: 0,  limitPerDay: 500 },
+        key_5:  { usedToday: 0,  limitPerDay: 500 },
+        key_6:  { usedToday: 0,  limitPerDay: 500 },
+        key_7:  { usedToday: 0,  limitPerDay: 500 },
+        key_8:  { usedToday: 0,  limitPerDay: 500 },
+        key_9:  { usedToday: 0,  limitPerDay: 500 },
+        key_10: { usedToday: 0,  limitPerDay: 500 },
+      },
     },
   };
 }
@@ -675,6 +713,7 @@ function renderAll(data) {
   renderCharts(data);
   renderNotifs(data.providers);
   renderDetailKeys(data.allKeys || {});
+  syncDetailBadges(data.providers);
 }
 
 function renderStats(data) {
@@ -690,6 +729,7 @@ function renderStats(data) {
 function renderProviders(providers) {
   const grid = document.getElementById('provider-grid');
   grid.innerHTML = '';
+  const names = { gemini: 'Gemini', huggingface: 'Hugging Face', sightengine: 'Sightengine' };
   providers.forEach(p => {
     const isOk    = p.status === 'success';
     const isError = p.status === 'error';
@@ -697,7 +737,6 @@ function renderProviders(providers) {
     const badgeText  = isOk ? '✅ AKTIF' : isError ? '❌ LIMIT' : '— IDLE';
     const quotaPct = Math.min(100, Math.round((p.total % 1000) / 10));
     const barClass = quotaPct > 80 ? 'danger' : '';
-    const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
     grid.innerHTML += `
       <div class="provider-card">
         <div class="provider-header">
@@ -740,16 +779,16 @@ function renderCharts(data) {
   const ctx2 = document.getElementById('chart-provider').getContext('2d');
   chartProvider = new Chart(ctx2, {
     type: 'doughnut',
-    data: { labels: pLabels, datasets: [{ data: pCounts, backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,77,109,0.7)', 'rgba(105,255,148,0.7)'], borderColor: '#0a0a0f', borderWidth: 3 }] },
+    data: { labels: pLabels, datasets: [{ data: pCounts, backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,204,0,0.7)', 'rgba(0,212,170,0.7)'], borderColor: '#0a0a0f', borderWidth: 3 }] },
     options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 } } }, cutout: '65%' }
   });
 }
 
 function renderNotifs(providers) {
   const list = document.getElementById('notif-list');
+  const names = { gemini: 'Gemini', huggingface: 'Hugging Face', sightengine: 'Sightengine' };
   const notifs = [];
   providers.forEach(p => {
-    const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
     if (p.status === 'error') notifs.push({ type: 'error', icon: '🚨', text: `<strong>${names[p.name]}</strong> — API key limit atau error: ${p.error || 'unknown'}`, time: p.lastUsed });
   });
   if (notifs.length === 0) notifs.push({ type: 'ok', icon: '✅', text: 'Semua provider berjalan normal.', time: new Date().toLocaleTimeString('id-ID') });
@@ -760,16 +799,36 @@ function showNotif(type, msg) {
   document.getElementById('notif-list').innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
 }
 
-// ── Render Detail Key Cards (NEW) ──────────────────────────────
+// ── Render Detail Key Cards ────────────────────────────────────
 function renderDetailKeys(allKeys) {
   const grid = document.getElementById('detail-key-grid');
-
   const today = new Date().toISOString().slice(0, 10);
 
   const providers = [
-    { id: 'gemini',   label: 'Gemini',   icon: 'G', iconClass: 'dkc-icon-gemini',   fillClass: 'dkc-fill-gemini',   defaultLimit: 20   },
-    { id: 'clarifai', label: 'Clarifai', icon: '◉', iconClass: 'dkc-icon-clarifai', fillClass: 'dkc-fill-clarifai', defaultLimit: 1000 },
-    { id: 'claude',   label: 'Claude',   icon: '✦', iconClass: 'dkc-icon-claude',   fillClass: 'dkc-fill-claude',   defaultLimit: 100  },
+    {
+      id: 'gemini',
+      label: 'Gemini',
+      icon: 'G',
+      iconClass: 'dkc-icon-gemini',
+      fillClass: 'dkc-fill-gemini',
+      defaultLimit: 20,
+    },
+    {
+      id: 'huggingface',
+      label: 'Hugging Face',
+      icon: '🤗',
+      iconClass: 'dkc-icon-huggingface',
+      fillClass: 'dkc-fill-huggingface',
+      defaultLimit: 1000,
+    },
+    {
+      id: 'sightengine',
+      label: 'Sightengine',
+      icon: '👁',
+      iconClass: 'dkc-icon-sightengine',
+      fillClass: 'dkc-fill-sightengine',
+      defaultLimit: 500,
+    },
   ];
 
   grid.innerHTML = providers.map(prov => {
@@ -779,11 +838,10 @@ function renderDetailKeys(allKeys) {
       : Array.from({length: 10}, (_, i) => [`key_${i+1}`, { usedToday: 0, limitPerDay: prov.defaultLimit }]);
 
     const rows = entries.map(([keyId, d]) => {
-      const savedDate = d.todayDate || '';
-      const used = savedDate === today ? (d.usedToday || 0) : (d.usedToday || 0);
+      const used  = d.usedToday || 0;
       const limit = d.limitPerDay || prov.defaultLimit;
-      const pct = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
-      const hasUsage = used > 0;
+      const pct   = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
+      const hasUsage  = used > 0;
       const fillClass = hasUsage ? prov.fillClass : 'dkc-fill-zero';
       const num = keyId.replace(/[^0-9]/g, '') || keyId;
       return `<div class="dkc-key-row">
@@ -807,22 +865,16 @@ function renderDetailKeys(allKeys) {
   }).join('');
 }
 
-// Sync badge status dari provider cards ke detail cards
 function syncDetailBadges(providers) {
+  const names = { gemini: 'gemini', huggingface: 'huggingface', sightengine: 'sightengine' };
   providers.forEach(p => {
     const el = document.getElementById('dkc-badge-' + p.name);
     if (!el) return;
-    const isOk = p.status === 'success';
+    const isOk    = p.status === 'success';
     const isError = p.status === 'error';
-    el.className = 'badge ' + (isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle');
+    el.className  = 'badge ' + (isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle');
     el.textContent = isOk ? '✅ aktif' : isError ? '❌ limit' : '— idle';
   });
-}
-
-const _renderAll = renderAll;
-function renderAll(data) {
-  _renderAll(data);
-  syncDetailBadges(data.providers);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
