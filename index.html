@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MataDigital — Developer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --border:    #1e1e2e;
+      --accent:    #00e5ff;
+      --accent2:   #ff4d6d;
+      --accent3:   #69ff94;
+      --text:      #e8e8f0;
+      --muted:     #5a5a7a;
+      --card-bg:   #13131c;
+      --font-mono: 'Space Mono', monospace;
+      --font-sans: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ─────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ────────────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+    .logo span { color: var(--muted); }
+
+    .last-update {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    #dot-live {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent3);
+      margin-right: 6px;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ── Layout ────────────────────────────────────────────────── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Section title ─────────────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Stat cards row ────────────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    /* ── Provider cards ────────────────────────────────────────── */
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .provider-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .provider-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+    .provider-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .provider-name {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .badge-ok    { background: rgba(105,255,148,0.12); color: var(--accent3); border: 1px solid rgba(105,255,148,0.3); }
+    .badge-limit { background: rgba(255,77,109,0.12);  color: var(--accent2); border: 1px solid rgba(255,77,109,0.3); }
+    .badge-idle  { background: rgba(90,90,122,0.15);   color: var(--muted);   border: 1px solid var(--border); }
+
+    .provider-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .p-stat { }
+    .p-stat-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; }
+    .p-stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .quota-bar-wrap {
+      margin-top: 1rem;
+    }
+    .quota-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .quota-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .quota-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent3), var(--accent));
+      transition: width 0.8s ease;
+    }
+    .quota-bar-fill.danger {
+      background: linear-gradient(90deg, var(--accent2), #ff8c42);
+    }
+
+    /* ── Charts ────────────────────────────────────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.2rem;
+      font-family: var(--font-mono);
+    }
+
+    .chart-wrap { position: relative; }
+
+    /* ── Notifikasi ────────────────────────────────────────────── */
+    .notif-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .notif-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
+      border-radius: 8px;
+      padding: 0.85rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      animation: slide-in 0.3s ease;
+    }
+
+    .notif-item.info { border-left-color: var(--accent); }
+    .notif-item.ok   { border-left-color: var(--accent3); }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .notif-icon { font-size: 1rem; }
+    .notif-text { flex: 1; color: var(--text); }
+    .notif-time {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    /* ── Empty / loading states ────────────────────────────────── */
+    .loading-state {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      padding: 1.5rem 0;
+    }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      padding: 1rem 0;
+    }
+
+    /* ── Config panel ──────────────────────────────────────────── */
+    #config-panel {
+      position: fixed; inset: 0;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .config-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      margin: 1rem;
+    }
+
+    .config-box h2 {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .config-box p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .config-box label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+
+    .config-box input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .config-box input:focus { border-color: var(--accent); }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .provider-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Config Panel ───────────────────────────────────────────── -->
+<div id="config-panel">
+  <div class="config-box">
+    <h2>// MATADIGITAL DASHBOARD</h2>
+    <p>Masukkan konfigurasi Firebase project kamu. Data ini disimpan di browser (localStorage) dan tidak dikirim ke mana pun.</p>
+
+    <label>API Key</label>
+    <input type="text" id="cfg-apikey" placeholder="AIzaSy..." />
+
+    <label>Auth Domain</label>
+    <input type="text" id="cfg-authdomain" placeholder="matadigital-xxxx.firebaseapp.com" />
+
+    <label>Database URL</label>
+    <input type="text" id="cfg-dburl" placeholder="https://matadigital-xxxx-default-rtdb.asia-southeast1.firebaseapp.app" />
+
+    <label>Project ID</label>
+    <input type="text" id="cfg-projectid" placeholder="matadigital-xxxx" />
+
+    <button class="btn-primary" onclick="saveConfig()">Sambungkan Firebase</button>
+    <button class="btn-secondary" onclick="loadDemoData()">Lihat Demo (tanpa Firebase)</button>
+  </div>
+</div>
+
+<!-- ── Header ─────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">MATA<span>DIGITAL</span> // DEV DASHBOARD</div>
+  <div class="last-update"><span id="dot-live"></span><span id="last-update-text">menghubungkan...</span></div>
+</header>
+
+<!-- ── Main ───────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Stat cards -->
+  <div class="section-label">Ringkasan Hari Ini</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Request Hari Ini</div>
+      <div class="stat-value" id="stat-today">—</div>
+      <div class="stat-sub" id="stat-today-sub">memuat...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Request Bulan Ini</div>
+      <div class="stat-value" id="stat-month">—</div>
+      <div class="stat-sub" id="stat-month-sub">memuat...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Provider Aktif</div>
+      <div class="stat-value" id="stat-active">—</div>
+      <div class="stat-sub">dari 3 provider</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Success Rate</div>
+      <div class="stat-value" id="stat-rate">—</div>
+      <div class="stat-sub" id="stat-rate-sub">memuat...</div>
+    </div>
+  </div>
+
+  <!-- Provider status -->
+  <div class="section-label">Status Provider & API Key</div>
+  <div class="provider-grid" id="provider-grid">
+    <div class="loading-state"><div class="spinner"></div> Memuat data provider...</div>
+  </div>
+
+  <!-- Charts -->
+  <div class="section-label">Grafik Penggunaan</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Request per Hari (7 hari terakhir)</div>
+      <div class="chart-wrap">
+        <canvas id="chart-daily" height="200"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribusi Provider</div>
+      <div class="chart-wrap">
+        <canvas id="chart-provider" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifikasi -->
+  <div class="section-label">Notifikasi</div>
+  <div class="notif-list" id="notif-list">
+    <div class="loading-state"><div class="spinner"></div> Memuat notifikasi...</div>
+  </div>
+
+</main>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────
+const LS_KEY = 'matadigital_fb_config';
+
+function saveConfig() {
+  const cfg = {
+    apiKey:      document.getElementById('cfg-apikey').value.trim(),
+    authDomain:  document.getElementById('cfg-authdomain').value.trim(),
+    databaseURL: document.getElementById('cfg-dburl').value.trim(),
+    projectId:   document.getElementById('cfg-projectid').value.trim(),
+  };
+  if (!cfg.apiKey || !cfg.databaseURL) {
+    alert('API Key dan Database URL wajib diisi.');
+    return;
+  }
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+  document.getElementById('config-panel').style.display = 'none';
+  initFirebase(cfg);
+}
+
+function loadDemoData() {
+  document.getElementById('config-panel').style.display = 'none';
+  renderAll(getDemoData());
+  document.getElementById('last-update-text').textContent = 'MODE DEMO';
+}
+
+// ── Firebase init ──────────────────────────────────────────────
+function initFirebase(cfg) {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(cfg);
+    const db = firebase.database();
+    subscribeData(db);
+  } catch(e) {
+    console.error(e);
+    showNotif('error', 'Gagal menghubungkan ke Firebase: ' + e.message);
+  }
+}
+
+function subscribeData(db) {
+  db.ref('logs').on('value', snap => {
+    const data = snap.val() || {};
+    renderAll(processFirebaseData(data));
+    const now = new Date().toLocaleTimeString('id-ID');
+    document.getElementById('last-update-text').textContent = 'update: ' + now;
+  }, err => {
+    showNotif('error', 'Firebase error: ' + err.message);
+  });
+}
+
+// ── Process Firebase data ──────────────────────────────────────
+function processFirebaseData(logs) {
+  const apiStatus  = logs.api_status  || {};
+  const results    = logs.results     || {};
+  const sessions   = logs.sessions    || {};
+
+  const today = new Date().toISOString().slice(0, 10);
+  const thisMonth = new Date().toISOString().slice(0, 7);
+
+  // Request per hari (7 hari terakhir)
+  const dailyMap = {};
+  const providerCount = {};
+  let todayCount = 0, monthCount = 0;
+  let successCount = 0, totalCount = 0;
+
+  Object.values(results).forEach(r => {
+    if (!r || !r.timestamp) return;
+    const date = r.timestamp.slice(0, 10);
+    const month = r.timestamp.slice(0, 7);
+    dailyMap[date] = (dailyMap[date] || 0) + 1;
+    providerCount[r.provider] = (providerCount[r.provider] || 0) + 1;
+    if (date === today) todayCount++;
+    if (month === thisMonth) monthCount++;
+    totalCount++;
+  });
+
+  // Success rate dari api_status
+  Object.values(apiStatus).forEach(p => {
+    if (p.lastStatus === 'success') successCount++;
+  });
+  const activeProviders = Object.values(apiStatus).filter(p => p.lastStatus === 'success').length;
+
+  // Daily chart: 7 hari terakhir
+  const daily = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    daily.push({ date: key, count: dailyMap[key] || 0 });
+  }
+
+  // Provider cards
+  const providers = ['gemini', 'clarifai', 'claude'].map(name => {
+    const s = apiStatus[name] || {};
+    return {
+      name,
+      status:    s.lastStatus || 'idle',
+      total:     s.totalRequest || 0,
+      lastUsed:  s.lastUsed || '—',
+      error:     s.errorMessage || null,
+      countToday: providerCount[name] || 0,
+    };
+  });
+
+  return {
+    todayCount, monthCount, activeProviders,
+    successRate: totalCount ? Math.round((successCount / Object.keys(apiStatus).length || 0) * 100) : 0,
+    daily, providers, providerCount,
+  };
+}
+
+// ── Demo data ──────────────────────────────────────────────────
+function getDemoData() {
+  const today = new Date();
+  const daily = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    daily.push({ date: d.toISOString().slice(0,10), count: Math.floor(Math.random()*40)+5 });
+  }
+  return {
+    todayCount: 23, monthCount: 412, activeProviders: 2,
+    successRate: 94,
+    daily,
+    providers: [
+      { name: 'gemini',   status: 'success', total: 210, lastUsed: '2026-05-29 11:10:00', error: null, countToday: 15 },
+      { name: 'clarifai', status: 'error',   total: 145, lastUsed: '2026-05-29 10:55:00', error: 'Rate limit exceeded', countToday: 5 },
+      { name: 'claude',   status: 'success', total: 57,  lastUsed: '2026-05-29 11:05:00', error: null, countToday: 3 },
+    ],
+    providerCount: { gemini: 15, clarifai: 5, claude: 3 },
+  };
+}
+
+// ── Render semua ───────────────────────────────────────────────
+let chartDaily = null, chartProvider = null;
+
+function renderAll(data) {
+  renderStats(data);
+  renderProviders(data.providers);
+  renderCharts(data);
+  renderNotifs(data.providers);
+}
+
+function renderStats(data) {
+  document.getElementById('stat-today').textContent    = data.todayCount;
+  document.getElementById('stat-today-sub').textContent = 'request hari ini';
+  document.getElementById('stat-month').textContent    = data.monthCount;
+  document.getElementById('stat-month-sub').textContent = 'request bulan ini';
+  document.getElementById('stat-active').textContent   = data.activeProviders;
+  document.getElementById('stat-rate').textContent     = data.successRate + '%';
+  document.getElementById('stat-rate-sub').textContent = 'success rate';
+}
+
+function renderProviders(providers) {
+  const grid = document.getElementById('provider-grid');
+  grid.innerHTML = '';
+
+  providers.forEach(p => {
+    const isOk    = p.status === 'success';
+    const isError = p.status === 'error';
+    const badgeClass = isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle';
+    const badgeText  = isOk ? '✅ AKTIF' : isError ? '❌ LIMIT' : '— IDLE';
+
+    // Quota bar: simulasi dari total request (maks asumsi 1000/hari)
+    const quotaPct = Math.min(100, Math.round((p.total % 1000) / 10));
+    const barClass = quotaPct > 80 ? 'danger' : '';
+
+    const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
+
+    grid.innerHTML += `
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">${names[p.name] || p.name}</div>
+          <div class="badge ${badgeClass}">${badgeText}</div>
+        </div>
+        <div class="provider-stats">
+          <div class="p-stat">
+            <div class="p-stat-label">Total Request</div>
+            <div class="p-stat-value">${p.total.toLocaleString()}</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-label">Hari Ini</div>
+            <div class="p-stat-value">${p.countToday}</div>
+          </div>
+          <div class="p-stat" style="grid-column:span 2">
+            <div class="p-stat-label">Terakhir Dipakai</div>
+            <div class="p-stat-value" style="font-size:0.8rem">${p.lastUsed}</div>
+          </div>
+        </div>
+        ${p.error ? `<div style="margin-top:0.75rem;font-size:0.75rem;color:var(--accent2);background:rgba(255,77,109,0.07);border-radius:6px;padding:6px 10px;">⚠️ ${p.error}</div>` : ''}
+        <div class="quota-bar-wrap">
+          <div class="quota-bar-label">
+            <span>Estimasi Pemakaian</span>
+            <span>${quotaPct}%</span>
+          </div>
+          <div class="quota-bar">
+            <div class="quota-bar-fill ${barClass}" style="width:${quotaPct}%"></div>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderCharts(data) {
+  const labels = data.daily.map(d => {
+    const [,m,dd] = d.date.split('-');
+    return `${dd}/${m}`;
+  });
+  const counts = data.daily.map(d => d.count);
+
+  // Chart harian
+  if (chartDaily) chartDaily.destroy();
+  const ctx1 = document.getElementById('chart-daily').getContext('2d');
+  chartDaily = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Request',
+        data: counts,
+        backgroundColor: 'rgba(0,229,255,0.15)',
+        borderColor: '#00e5ff',
+        borderWidth: 1.5,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } } },
+        y: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true },
+      }
+    }
+  });
+
+  // Chart provider
+  const pLabels = Object.keys(data.providerCount);
+  const pCounts = Object.values(data.providerCount);
+  if (chartProvider) chartProvider.destroy();
+  const ctx2 = document.getElementById('chart-provider').getContext('2d');
+  chartProvider = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: pLabels,
+      datasets: [{
+        data: pCounts,
+        backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,77,109,0.7)', 'rgba(105,255,148,0.7)'],
+        borderColor: '#0a0a0f',
+        borderWidth: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 }
+        }
+      },
+      cutout: '65%',
+    }
+  });
+}
+
+function renderNotifs(providers) {
+  const list = document.getElementById('notif-list');
+  const notifs = [];
+
+  providers.forEach(p => {
+    const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
+    if (p.status === 'error') {
+      notifs.push({ type: 'error', icon: '🚨', text: `<strong>${names[p.name]}</strong> — API key limit atau error: ${p.error || 'unknown'}`, time: p.lastUsed });
+    }
+  });
+
+  if (notifs.length === 0) {
+    notifs.push({ type: 'ok', icon: '✅', text: 'Semua provider berjalan normal.', time: new Date().toLocaleTimeString('id-ID') });
+  }
+
+  list.innerHTML = notifs.map(n => `
+    <div class="notif-item ${n.type === 'error' ? '' : n.type}">
+      <span class="notif-icon">${n.icon}</span>
+      <span class="notif-text">${n.text}</span>
+      <span class="notif-time">${n.time}</span>
+    </div>
+  `).join('');
+}
+
+function showNotif(type, msg) {
+  const list = document.getElementById('notif-list');
+  list.innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
+}
+
+// ── Init ───────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Live dot
+  const dot = document.createElement('span');
+  dot.id = 'dot-live';
+  document.getElementById('last-update-text').before(dot);
+
+  // Cek saved config
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) {
+    try {
+      const cfg = JSON.parse(saved);
+      // Pre-fill fields
+      document.getElementById('cfg-apikey').value     = cfg.apiKey || '';
+      document.getElementById('cfg-authdomain').value = cfg.authDomain || '';
+      document.getElementById('cfg-dburl').value      = cfg.databaseURL || '';
+      document.getElementById('cfg-projectid').value  = cfg.projectId || '';
+    } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>
