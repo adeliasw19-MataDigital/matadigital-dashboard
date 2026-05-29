@@ -423,6 +423,19 @@
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
+    /* ── Key detail table ─────────────────────────────────────── */
+    .key-table-wrap { margin-bottom: 2.5rem; }
+    .key-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-family: var(--font-mono); }
+    .key-table th { text-align: left; color: var(--muted); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 0.75rem 0.6rem; border-bottom: 1px solid var(--border); }
+    .key-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    .key-table tr:last-child td { border-bottom: none; }
+    .key-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .sisa-ok   { color: var(--accent3); font-weight: 700; }
+    .sisa-warn { color: #EF9F27; font-weight: 700; }
+    .sisa-empty { color: var(--accent2); font-weight: 700; }
+    .mini-bar { width: 80px; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px; }
+    .mini-bar-fill { height: 100%; border-radius: 4px; }
+
     /* ── Responsive ────────────────────────────────────────────── */
     @media (max-width: 600px) {
       .stat-grid { grid-template-columns: 1fr 1fr; }
@@ -518,6 +531,14 @@
     <div class="loading-state"><div class="spinner"></div> Memuat notifikasi...</div>
   </div>
 
+
+  <!-- Detail per API Key -->
+  <div class="section-label">Detail API Key Gemini</div>
+  <div class="key-table-wrap">
+    <div class="chart-card">
+      <div id="key-table-container"><div class="loading-state"><div class="spinner"></div> Memuat data key...</div></div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -621,6 +642,7 @@ function processFirebaseData(logs) {
     todayCount, monthCount, activeProviders,
     successRate: totalCount ? Math.round((successCount / Object.keys(apiStatus).length || 0) * 100) : 0,
     daily, providers, providerCount,
+    geminiKeys: (apiStatus.gemini || {}).keys || {},
   };
 }
 
@@ -653,6 +675,7 @@ function renderAll(data) {
   renderProviders(data.providers);
   renderCharts(data);
   renderNotifs(data.providers);
+  renderKeys(data.geminiKeys);
 }
 
 function renderStats(data) {
@@ -804,6 +827,70 @@ function renderNotifs(providers) {
 function showNotif(type, msg) {
   const list = document.getElementById('notif-list');
   list.innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
+}
+
+
+function renderKeys(keyData) {
+  const container = document.getElementById('key-table-container');
+  if (!keyData || Object.keys(keyData).length === 0) {
+    container.innerHTML = '<div class="empty-state">// belum ada data per key</div>';
+    return;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  let totalUsed = 0, totalSisa = 0, totalLimit = 0;
+
+  const rows = Object.entries(keyData).sort((a,b) => a[0].localeCompare(b[0])).map(([keyId, data]) => {
+    const savedDate = data.todayDate || '';
+    const usedToday = savedDate === today ? (data.usedToday || 0) : 0;
+    const limit = data.limitPerDay || 20;
+    const sisa = Math.max(0, limit - usedToday);
+    const pct = Math.round((usedToday / limit) * 100);
+    const barColor = pct >= 80 ? '#E24B4A' : pct >= 50 ? '#EF9F27' : '#69ff94';
+    const sisaClass = sisa === 0 ? 'sisa-empty' : sisa <= 5 ? 'sisa-warn' : 'sisa-ok';
+
+    totalUsed += usedToday;
+    totalSisa += sisa;
+    totalLimit += limit;
+
+    return `<tr>
+      <td>${keyId.replace('_', ' ').toUpperCase()}</td>
+      <td>${usedToday}
+        <span class="mini-bar"><span class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></span></span>
+      </td>
+      <td class="${sisaClass}">${sisa}</td>
+      <td style="color:var(--muted)">${limit}</td>
+      <td style="color:var(--muted);font-size:0.7rem">${data.lastUsed || '—'}</td>
+    </tr>`;
+  }).join('');
+
+  const totalPct = Math.round((totalUsed / totalLimit) * 100);
+  const totalSisaClass = totalSisa === 0 ? 'sisa-empty' : totalSisa <= 20 ? 'sisa-warn' : 'sisa-ok';
+
+  container.innerHTML = `
+    <table class="key-table">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Dipakai Hari Ini</th>
+          <th>Sisa</th>
+          <th>Limit/Hari</th>
+          <th>Terakhir Dipakai</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr>
+          <td style="color:var(--muted);font-size:0.7rem">TOTAL</td>
+          <td style="font-weight:700">${totalUsed}
+            <span class="mini-bar"><span class="mini-bar-fill" style="width:${totalPct}%;background:${totalPct>=80?'#E24B4A':totalPct>=50?'#EF9F27':'#69ff94'};"></span></span>
+          </td>
+          <td class="${totalSisaClass}" style="font-weight:700">${totalSisa}</td>
+          <td style="color:var(--muted)">${totalLimit}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>`;
 }
 
 // ── Init ───────────────────────────────────────────────────────
