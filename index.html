@@ -521,23 +521,18 @@
 </main>
 
 <script>
-// ── Config ─────────────────────────────────────────────────────
-const LS_KEY = 'matadigital_fb_config';
+// ── Config (hardcoded — tidak perlu isi manual) ─────────────────
+const FIREBASE_CONFIG = {
+  apiKey:      'AIzaSyB6BzPEwCb76jlCl7JWGVaHvUrq4-RC6ac',
+  authDomain:  'matadigital-8d52c.firebaseapp.com',
+  databaseURL: 'https://matadigital-8d52c-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId:   'matadigital-8d52c',
+};
 
 function saveConfig() {
-  const cfg = {
-    apiKey:      document.getElementById('cfg-apikey').value.trim(),
-    authDomain:  document.getElementById('cfg-authdomain').value.trim(),
-    databaseURL: document.getElementById('cfg-dburl').value.trim(),
-    projectId:   document.getElementById('cfg-projectid').value.trim(),
-  };
-  if (!cfg.apiKey || !cfg.databaseURL) {
-    alert('API Key dan Database URL wajib diisi.');
-    return;
-  }
-  localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+  // Tidak dipakai lagi, config sudah hardcoded
   document.getElementById('config-panel').style.display = 'none';
-  initFirebase(cfg);
+  initFirebase(FIREBASE_CONFIG);
 }
 
 function loadDemoData() {
@@ -818,18 +813,9 @@ window.addEventListener('DOMContentLoaded', () => {
   dot.id = 'dot-live';
   document.getElementById('last-update-text').before(dot);
 
-  // Cek saved config
-  const saved = localStorage.getItem(LS_KEY);
-  if (saved) {
-    try {
-      const cfg = JSON.parse(saved);
-      // Pre-fill fields
-      document.getElementById('cfg-apikey').value     = cfg.apiKey || '';
-      document.getElementById('cfg-authdomain').value = cfg.authDomain || '';
-      document.getElementById('cfg-dburl').value      = cfg.databaseURL || '';
-      document.getElementById('cfg-projectid').value  = cfg.projectId || '';
-    } catch(e) {}
-  }
+  // Langsung connect Firebase, sembunyikan config panel
+  document.getElementById('config-panel').style.display = 'none';
+  initFirebase(FIREBASE_CONFIG);
 });
 </script>
 </body>
