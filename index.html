@@ -10,7 +10,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <style>
-    /* ── Reset & Variables ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -37,7 +36,6 @@
       overflow-x: hidden;
     }
 
-    /* ── Noise texture overlay ─────────────────────────────────── */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -46,7 +44,6 @@
       z-index: 0;
     }
 
-    /* ── Header ────────────────────────────────────────────────── */
     header {
       position: sticky; top: 0;
       z-index: 100;
@@ -88,7 +85,6 @@
       50%       { opacity: 0.4; transform: scale(0.7); }
     }
 
-    /* ── Layout ────────────────────────────────────────────────── */
     main {
       position: relative; z-index: 1;
       max-width: 1200px;
@@ -96,7 +92,6 @@
       padding: 2rem 1.5rem 4rem;
     }
 
-    /* ── Section title ─────────────────────────────────────────── */
     .section-label {
       font-family: var(--font-mono);
       font-size: 0.65rem;
@@ -106,7 +101,6 @@
       margin-bottom: 1rem;
     }
 
-    /* ── Stat cards row ────────────────────────────────────────── */
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -153,7 +147,6 @@
       margin-top: 0.35rem;
     }
 
-    /* ── Provider cards ────────────────────────────────────────── */
     .provider-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -204,7 +197,6 @@
       gap: 0.75rem;
     }
 
-    .p-stat { }
     .p-stat-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; }
     .p-stat-value {
       font-family: var(--font-mono);
@@ -212,9 +204,7 @@
       color: var(--text);
     }
 
-    .quota-bar-wrap {
-      margin-top: 1rem;
-    }
+    .quota-bar-wrap { margin-top: 1rem; }
     .quota-bar-label {
       display: flex;
       justify-content: space-between;
@@ -234,11 +224,8 @@
       background: linear-gradient(90deg, var(--accent3), var(--accent));
       transition: width 0.8s ease;
     }
-    .quota-bar-fill.danger {
-      background: linear-gradient(90deg, var(--accent2), #ff8c42);
-    }
+    .quota-bar-fill.danger { background: linear-gradient(90deg, var(--accent2), #ff8c42); }
 
-    /* ── Charts ────────────────────────────────────────────────── */
     .charts-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -246,9 +233,7 @@
       margin-bottom: 2.5rem;
     }
 
-    @media (max-width: 768px) {
-      .charts-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
 
     .chart-card {
       background: var(--card-bg);
@@ -268,7 +253,6 @@
 
     .chart-wrap { position: relative; }
 
-    /* ── Notifikasi ────────────────────────────────────────────── */
     .notif-list {
       display: flex;
       flex-direction: column;
@@ -299,13 +283,8 @@
 
     .notif-icon { font-size: 1rem; }
     .notif-text { flex: 1; color: var(--text); }
-    .notif-time {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--muted);
-    }
+    .notif-time { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
 
-    /* ── Empty / loading states ────────────────────────────────── */
     .loading-state {
       display: flex;
       align-items: center;
@@ -333,7 +312,6 @@
       padding: 1rem 0;
     }
 
-    /* ── Config panel ──────────────────────────────────────────── */
     #config-panel {
       position: fixed; inset: 0;
       background: rgba(10,10,15,0.92);
@@ -354,89 +332,131 @@
       margin: 1rem;
     }
 
-    .config-box h2 {
-      font-family: var(--font-mono);
-      font-size: 1rem;
-      color: var(--accent);
-      margin-bottom: 0.4rem;
-    }
-
-    .config-box p {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-
-    .config-box label {
-      display: block;
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.35rem;
-    }
-
+    .config-box h2 { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); margin-bottom: 0.4rem; }
+    .config-box p { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .config-box label { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.35rem; }
     .config-box input {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.85rem;
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      margin-bottom: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.6rem 0.85rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 0.78rem; margin-bottom: 1rem;
+      outline: none; transition: border-color 0.2s;
     }
     .config-box input:focus { border-color: var(--accent); }
 
     .btn-primary {
-      width: 100%;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 0.7rem;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      transition: opacity 0.2s;
+      width: 100%; background: var(--accent); color: #000;
+      border: none; border-radius: 8px; padding: 0.7rem;
+      font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.05em; transition: opacity 0.2s;
     }
     .btn-primary:hover { opacity: 0.85; }
 
     .btn-secondary {
-      width: 100%;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: border-color 0.2s, color 0.2s;
+      width: 100%; background: transparent; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem;
+      font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer;
+      margin-top: 0.5rem; transition: border-color 0.2s, color 0.2s;
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── Key detail table ─────────────────────────────────────── */
-    .key-table-wrap { margin-bottom: 2.5rem; }
-    .key-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-family: var(--font-mono); }
-    .key-table th { text-align: left; color: var(--muted); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 0.75rem 0.6rem; border-bottom: 1px solid var(--border); }
-    .key-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-    .key-table tr:last-child td { border-bottom: none; }
-    .key-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .sisa-ok   { color: var(--accent3); font-weight: 700; }
-    .sisa-warn { color: #EF9F27; font-weight: 700; }
-    .sisa-empty { color: var(--accent2); font-weight: 700; }
-    .mini-bar { width: 80px; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px; }
-    .mini-bar-fill { height: 100%; border-radius: 4px; }
+    /* ── Detail API Key cards (NEW) ──────────────────────────── */
+    .detail-key-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
 
-    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) { .detail-key-grid { grid-template-columns: 1fr; } }
+
+    .detail-key-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.25rem 1rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .detail-key-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    .dkc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .dkc-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .dkc-icon {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .dkc-icon-gemini  { background: #0d2236; color: #00e5ff; border: 1px solid #0e3a56; }
+    .dkc-icon-clarifai{ background: #200d36; color: #b060ff; border: 1px solid #38165c; }
+    .dkc-icon-claude  { background: #241500; color: #ff9800; border: 1px solid #3d2300; }
+
+    .dkc-sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-left: 35px;
+    }
+
+    .dkc-key-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(30,30,46,0.7);
+    }
+    .dkc-key-row:last-child { border-bottom: none; }
+
+    .dkc-key-name {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      width: 40px;
+      flex-shrink: 0;
+    }
+
+    .dkc-bar-track {
+      flex: 1;
+      height: 4px;
+      background: #1a1a2e;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .dkc-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+    .dkc-fill-gemini  { background: #00c8e0; }
+    .dkc-fill-clarifai{ background: #9b4dff; }
+    .dkc-fill-claude  { background: #ff9800; }
+    .dkc-fill-zero    { background: #252540; }
+
+    .dkc-key-val {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: #666;
+      width: 46px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .dkc-key-val.has-usage { color: var(--text); }
+
     @media (max-width: 600px) {
       .stat-grid { grid-template-columns: 1fr 1fr; }
       .provider-grid { grid-template-columns: 1fr; }
@@ -445,39 +465,30 @@
 </head>
 <body>
 
-<!-- ── Config Panel ───────────────────────────────────────────── -->
 <div id="config-panel">
   <div class="config-box">
     <h2>// MATADIGITAL DASHBOARD</h2>
     <p>Masukkan konfigurasi Firebase project kamu. Data ini disimpan di browser (localStorage) dan tidak dikirim ke mana pun.</p>
-
     <label>API Key</label>
     <input type="text" id="cfg-apikey" placeholder="AIzaSy..." />
-
     <label>Auth Domain</label>
     <input type="text" id="cfg-authdomain" placeholder="matadigital-xxxx.firebaseapp.com" />
-
     <label>Database URL</label>
     <input type="text" id="cfg-dburl" placeholder="https://matadigital-xxxx-default-rtdb.asia-southeast1.firebaseapp.app" />
-
     <label>Project ID</label>
     <input type="text" id="cfg-projectid" placeholder="matadigital-xxxx" />
-
     <button class="btn-primary" onclick="saveConfig()">Sambungkan Firebase</button>
     <button class="btn-secondary" onclick="loadDemoData()">Lihat Demo (tanpa Firebase)</button>
   </div>
 </div>
 
-<!-- ── Header ─────────────────────────────────────────────────── -->
 <header>
   <div class="logo">MATA<span>DIGITAL</span> // DEV DASHBOARD</div>
   <div class="last-update"><span id="dot-live"></span><span id="last-update-text">menghubungkan...</span></div>
 </header>
 
-<!-- ── Main ───────────────────────────────────────────────────── -->
 <main>
 
-  <!-- Stat cards -->
   <div class="section-label">Ringkasan Hari Ini</div>
   <div class="stat-grid">
     <div class="stat-card">
@@ -502,47 +513,37 @@
     </div>
   </div>
 
-  <!-- Provider status -->
   <div class="section-label">Status Provider & API Key</div>
   <div class="provider-grid" id="provider-grid">
     <div class="loading-state"><div class="spinner"></div> Memuat data provider...</div>
   </div>
 
-  <!-- Charts -->
   <div class="section-label">Grafik Penggunaan</div>
   <div class="charts-grid">
     <div class="chart-card">
       <div class="chart-title">Request per Hari (7 hari terakhir)</div>
-      <div class="chart-wrap">
-        <canvas id="chart-daily" height="200"></canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="chart-daily" height="200"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Distribusi Provider</div>
-      <div class="chart-wrap">
-        <canvas id="chart-provider" height="200"></canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="chart-provider" height="200"></canvas></div>
     </div>
   </div>
 
-  <!-- Notifikasi -->
   <div class="section-label">Notifikasi</div>
   <div class="notif-list" id="notif-list">
     <div class="loading-state"><div class="spinner"></div> Memuat notifikasi...</div>
   </div>
 
-
-  <!-- Detail per API Key -->
-  <div class="section-label">Detail API Key Gemini</div>
-  <div class="key-table-wrap">
-    <div class="chart-card">
-      <div id="key-table-container"><div class="loading-state"><div class="spinner"></div> Memuat data key...</div></div>
-    </div>
+  <!-- ── Detail API Key (NEW — 3 card sejajar) ───────────────── -->
+  <div class="section-label">Detail API Key</div>
+  <div class="detail-key-grid" id="detail-key-grid">
+    <div class="loading-state"><div class="spinner"></div> Memuat data key...</div>
   </div>
+
 </main>
 
 <script>
-// ── Config (hardcoded — tidak perlu isi manual) ─────────────────
 const FIREBASE_CONFIG = {
   apiKey:      'AIzaSyB6BzPEwCb76jlCl7JWGVaHvUrq4-RC6ac',
   authDomain:  'matadigital-8d52c.firebaseapp.com',
@@ -551,7 +552,6 @@ const FIREBASE_CONFIG = {
 };
 
 function saveConfig() {
-  // Tidak dipakai lagi, config sudah hardcoded
   document.getElementById('config-panel').style.display = 'none';
   initFirebase(FIREBASE_CONFIG);
 }
@@ -562,7 +562,6 @@ function loadDemoData() {
   document.getElementById('last-update-text').textContent = 'MODE DEMO';
 }
 
-// ── Firebase init ──────────────────────────────────────────────
 function initFirebase(cfg) {
   try {
     if (!firebase.apps.length) firebase.initializeApp(cfg);
@@ -585,16 +584,13 @@ function subscribeData(db) {
   });
 }
 
-// ── Process Firebase data ──────────────────────────────────────
 function processFirebaseData(logs) {
   const apiStatus  = logs.api_status  || {};
   const results    = logs.results     || {};
-  const sessions   = logs.sessions    || {};
 
   const today = new Date().toISOString().slice(0, 10);
   const thisMonth = new Date().toISOString().slice(0, 7);
 
-  // Request per hari (7 hari terakhir)
   const dailyMap = {};
   const providerCount = {};
   let todayCount = 0, monthCount = 0;
@@ -611,13 +607,11 @@ function processFirebaseData(logs) {
     totalCount++;
   });
 
-  // Success rate dari api_status
   Object.values(apiStatus).forEach(p => {
     if (p.lastStatus === 'success') successCount++;
   });
   const activeProviders = Object.values(apiStatus).filter(p => p.lastStatus === 'success').length;
 
-  // Daily chart: 7 hari terakhir
   const daily = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -625,28 +619,30 @@ function processFirebaseData(logs) {
     daily.push({ date: key, count: dailyMap[key] || 0 });
   }
 
-  // Provider cards
   const providers = ['gemini', 'clarifai', 'claude'].map(name => {
     const s = apiStatus[name] || {};
     return {
-      name,
-      status:    s.lastStatus || 'idle',
-      total:     s.totalRequest || 0,
-      lastUsed:  s.lastUsed || '—',
-      error:     s.errorMessage || null,
-      countToday: providerCount[name] || 0,
+      name, status: s.lastStatus || 'idle',
+      total: s.totalRequest || 0, lastUsed: s.lastUsed || '—',
+      error: s.errorMessage || null, countToday: providerCount[name] || 0,
     };
   });
+
+  // Kumpulkan keys per provider
+  const allKeys = {
+    gemini:   (apiStatus.gemini   || {}).keys || {},
+    clarifai: (apiStatus.clarifai || {}).keys || {},
+    claude:   (apiStatus.claude   || {}).keys || {},
+  };
 
   return {
     todayCount, monthCount, activeProviders,
     successRate: totalCount ? Math.round((successCount / Object.keys(apiStatus).length || 0) * 100) : 0,
-    daily, providers, providerCount,
+    daily, providers, providerCount, allKeys,
     geminiKeys: (apiStatus.gemini || {}).keys || {},
   };
 }
 
-// ── Demo data ──────────────────────────────────────────────────
 function getDemoData() {
   const today = new Date();
   const daily = [];
@@ -655,8 +651,7 @@ function getDemoData() {
     daily.push({ date: d.toISOString().slice(0,10), count: Math.floor(Math.random()*40)+5 });
   }
   return {
-    todayCount: 23, monthCount: 412, activeProviders: 2,
-    successRate: 94,
+    todayCount: 23, monthCount: 412, activeProviders: 2, successRate: 94,
     daily,
     providers: [
       { name: 'gemini',   status: 'success', total: 210, lastUsed: '2026-05-29 11:10:00', error: null, countToday: 15 },
@@ -664,10 +659,14 @@ function getDemoData() {
       { name: 'claude',   status: 'success', total: 57,  lastUsed: '2026-05-29 11:05:00', error: null, countToday: 3 },
     ],
     providerCount: { gemini: 15, clarifai: 5, claude: 3 },
+    allKeys: {
+      gemini:   { key_1: { usedToday: 8, limitPerDay: 20 }, key_2: { usedToday: 3, limitPerDay: 20 }, key_3: { usedToday: 1, limitPerDay: 20 }, key_4: { usedToday: 0, limitPerDay: 20 }, key_5: { usedToday: 0, limitPerDay: 20 }, key_6: { usedToday: 0, limitPerDay: 20 }, key_7: { usedToday: 0, limitPerDay: 20 }, key_8: { usedToday: 0, limitPerDay: 20 }, key_9: { usedToday: 0, limitPerDay: 20 }, key_10: { usedToday: 0, limitPerDay: 20 } },
+      clarifai: { key_1: { usedToday: 0, limitPerDay: 1000 }, key_2: { usedToday: 0, limitPerDay: 1000 }, key_3: { usedToday: 0, limitPerDay: 1000 }, key_4: { usedToday: 0, limitPerDay: 1000 }, key_5: { usedToday: 0, limitPerDay: 1000 }, key_6: { usedToday: 0, limitPerDay: 1000 }, key_7: { usedToday: 0, limitPerDay: 1000 }, key_8: { usedToday: 0, limitPerDay: 1000 }, key_9: { usedToday: 0, limitPerDay: 1000 }, key_10: { usedToday: 0, limitPerDay: 1000 } },
+      claude:   { key_1: { usedToday: 0, limitPerDay: 100 }, key_2: { usedToday: 0, limitPerDay: 100 }, key_3: { usedToday: 0, limitPerDay: 100 }, key_4: { usedToday: 0, limitPerDay: 100 }, key_5: { usedToday: 0, limitPerDay: 100 }, key_6: { usedToday: 0, limitPerDay: 100 }, key_7: { usedToday: 0, limitPerDay: 100 }, key_8: { usedToday: 0, limitPerDay: 100 }, key_9: { usedToday: 0, limitPerDay: 100 }, key_10: { usedToday: 0, limitPerDay: 100 } },
+    },
   };
 }
 
-// ── Render semua ───────────────────────────────────────────────
 let chartDaily = null, chartProvider = null;
 
 function renderAll(data) {
@@ -675,35 +674,30 @@ function renderAll(data) {
   renderProviders(data.providers);
   renderCharts(data);
   renderNotifs(data.providers);
-  renderKeys(data.geminiKeys);
+  renderDetailKeys(data.allKeys || {});
 }
 
 function renderStats(data) {
-  document.getElementById('stat-today').textContent    = data.todayCount;
+  document.getElementById('stat-today').textContent     = data.todayCount;
   document.getElementById('stat-today-sub').textContent = 'request hari ini';
-  document.getElementById('stat-month').textContent    = data.monthCount;
+  document.getElementById('stat-month').textContent     = data.monthCount;
   document.getElementById('stat-month-sub').textContent = 'request bulan ini';
-  document.getElementById('stat-active').textContent   = data.activeProviders;
-  document.getElementById('stat-rate').textContent     = data.successRate + '%';
-  document.getElementById('stat-rate-sub').textContent = 'success rate';
+  document.getElementById('stat-active').textContent    = data.activeProviders;
+  document.getElementById('stat-rate').textContent      = data.successRate + '%';
+  document.getElementById('stat-rate-sub').textContent  = 'success rate';
 }
 
 function renderProviders(providers) {
   const grid = document.getElementById('provider-grid');
   grid.innerHTML = '';
-
   providers.forEach(p => {
     const isOk    = p.status === 'success';
     const isError = p.status === 'error';
     const badgeClass = isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle';
     const badgeText  = isOk ? '✅ AKTIF' : isError ? '❌ LIMIT' : '— IDLE';
-
-    // Quota bar: simulasi dari total request (maks asumsi 1000/hari)
     const quotaPct = Math.min(100, Math.round((p.total % 1000) / 10));
     const barClass = quotaPct > 80 ? 'danger' : '';
-
     const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
-
     grid.innerHTML += `
       <div class="provider-card">
         <div class="provider-header">
@@ -711,14 +705,8 @@ function renderProviders(providers) {
           <div class="badge ${badgeClass}">${badgeText}</div>
         </div>
         <div class="provider-stats">
-          <div class="p-stat">
-            <div class="p-stat-label">Total Request</div>
-            <div class="p-stat-value">${p.total.toLocaleString()}</div>
-          </div>
-          <div class="p-stat">
-            <div class="p-stat-label">Hari Ini</div>
-            <div class="p-stat-value">${p.countToday}</div>
-          </div>
+          <div class="p-stat"><div class="p-stat-label">Total Request</div><div class="p-stat-value">${p.total.toLocaleString()}</div></div>
+          <div class="p-stat"><div class="p-stat-label">Hari Ini</div><div class="p-stat-value">${p.countToday}</div></div>
           <div class="p-stat" style="grid-column:span 2">
             <div class="p-stat-label">Terakhir Dipakai</div>
             <div class="p-stat-value" style="font-size:0.8rem">${p.lastUsed}</div>
@@ -726,181 +714,121 @@ function renderProviders(providers) {
         </div>
         ${p.error ? `<div style="margin-top:0.75rem;font-size:0.75rem;color:var(--accent2);background:rgba(255,77,109,0.07);border-radius:6px;padding:6px 10px;">⚠️ ${p.error}</div>` : ''}
         <div class="quota-bar-wrap">
-          <div class="quota-bar-label">
-            <span>Estimasi Pemakaian</span>
-            <span>${quotaPct}%</span>
-          </div>
-          <div class="quota-bar">
-            <div class="quota-bar-fill ${barClass}" style="width:${quotaPct}%"></div>
-          </div>
+          <div class="quota-bar-label"><span>Estimasi Pemakaian</span><span>${quotaPct}%</span></div>
+          <div class="quota-bar"><div class="quota-bar-fill ${barClass}" style="width:${quotaPct}%"></div></div>
         </div>
       </div>`;
   });
 }
 
 function renderCharts(data) {
-  const labels = data.daily.map(d => {
-    const [,m,dd] = d.date.split('-');
-    return `${dd}/${m}`;
-  });
+  const labels = data.daily.map(d => { const [,m,dd] = d.date.split('-'); return `${dd}/${m}`; });
   const counts = data.daily.map(d => d.count);
-
-  // Chart harian
   if (chartDaily) chartDaily.destroy();
   const ctx1 = document.getElementById('chart-daily').getContext('2d');
   chartDaily = new Chart(ctx1, {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Request',
-        data: counts,
-        backgroundColor: 'rgba(0,229,255,0.15)',
-        borderColor: '#00e5ff',
-        borderWidth: 1.5,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } } },
-        y: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true },
-      }
-    }
+    data: { labels, datasets: [{ label: 'Request', data: counts, backgroundColor: 'rgba(0,229,255,0.15)', borderColor: '#00e5ff', borderWidth: 1.5, borderRadius: 4 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: {
+      x: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } } },
+      y: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true },
+    }}
   });
-
-  // Chart provider
   const pLabels = Object.keys(data.providerCount);
   const pCounts = Object.values(data.providerCount);
   if (chartProvider) chartProvider.destroy();
   const ctx2 = document.getElementById('chart-provider').getContext('2d');
   chartProvider = new Chart(ctx2, {
     type: 'doughnut',
-    data: {
-      labels: pLabels,
-      datasets: [{
-        data: pCounts,
-        backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,77,109,0.7)', 'rgba(105,255,148,0.7)'],
-        borderColor: '#0a0a0f',
-        borderWidth: 3,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 }
-        }
-      },
-      cutout: '65%',
-    }
+    data: { labels: pLabels, datasets: [{ data: pCounts, backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,77,109,0.7)', 'rgba(105,255,148,0.7)'], borderColor: '#0a0a0f', borderWidth: 3 }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 } } }, cutout: '65%' }
   });
 }
 
 function renderNotifs(providers) {
   const list = document.getElementById('notif-list');
   const notifs = [];
-
   providers.forEach(p => {
     const names = { gemini: 'Gemini', clarifai: 'Clarifai', claude: 'Claude' };
-    if (p.status === 'error') {
-      notifs.push({ type: 'error', icon: '🚨', text: `<strong>${names[p.name]}</strong> — API key limit atau error: ${p.error || 'unknown'}`, time: p.lastUsed });
-    }
+    if (p.status === 'error') notifs.push({ type: 'error', icon: '🚨', text: `<strong>${names[p.name]}</strong> — API key limit atau error: ${p.error || 'unknown'}`, time: p.lastUsed });
   });
-
-  if (notifs.length === 0) {
-    notifs.push({ type: 'ok', icon: '✅', text: 'Semua provider berjalan normal.', time: new Date().toLocaleTimeString('id-ID') });
-  }
-
-  list.innerHTML = notifs.map(n => `
-    <div class="notif-item ${n.type === 'error' ? '' : n.type}">
-      <span class="notif-icon">${n.icon}</span>
-      <span class="notif-text">${n.text}</span>
-      <span class="notif-time">${n.time}</span>
-    </div>
-  `).join('');
+  if (notifs.length === 0) notifs.push({ type: 'ok', icon: '✅', text: 'Semua provider berjalan normal.', time: new Date().toLocaleTimeString('id-ID') });
+  list.innerHTML = notifs.map(n => `<div class="notif-item ${n.type === 'error' ? '' : n.type}"><span class="notif-icon">${n.icon}</span><span class="notif-text">${n.text}</span><span class="notif-time">${n.time}</span></div>`).join('');
 }
 
 function showNotif(type, msg) {
-  const list = document.getElementById('notif-list');
-  list.innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
+  document.getElementById('notif-list').innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
 }
 
-
-function renderKeys(keyData) {
-  const container = document.getElementById('key-table-container');
-  if (!keyData || Object.keys(keyData).length === 0) {
-    container.innerHTML = '<div class="empty-state">// belum ada data per key</div>';
-    return;
-  }
+// ── Render Detail Key Cards (NEW) ──────────────────────────────
+function renderDetailKeys(allKeys) {
+  const grid = document.getElementById('detail-key-grid');
 
   const today = new Date().toISOString().slice(0, 10);
-  let totalUsed = 0, totalSisa = 0, totalLimit = 0;
 
-  const rows = Object.entries(keyData).sort((a,b) => a[0].localeCompare(b[0])).map(([keyId, data]) => {
-    const savedDate = data.todayDate || '';
-    const usedToday = savedDate === today ? (data.usedToday || 0) : 0;
-    const limit = data.limitPerDay || 20;
-    const sisa = Math.max(0, limit - usedToday);
-    const pct = Math.round((usedToday / limit) * 100);
-    const barColor = pct >= 80 ? '#E24B4A' : pct >= 50 ? '#EF9F27' : '#69ff94';
-    const sisaClass = sisa === 0 ? 'sisa-empty' : sisa <= 5 ? 'sisa-warn' : 'sisa-ok';
+  const providers = [
+    { id: 'gemini',   label: 'Gemini',   icon: 'G', iconClass: 'dkc-icon-gemini',   fillClass: 'dkc-fill-gemini',   defaultLimit: 20   },
+    { id: 'clarifai', label: 'Clarifai', icon: '◉', iconClass: 'dkc-icon-clarifai', fillClass: 'dkc-fill-clarifai', defaultLimit: 1000 },
+    { id: 'claude',   label: 'Claude',   icon: '✦', iconClass: 'dkc-icon-claude',   fillClass: 'dkc-fill-claude',   defaultLimit: 100  },
+  ];
 
-    totalUsed += usedToday;
-    totalSisa += sisa;
-    totalLimit += limit;
+  grid.innerHTML = providers.map(prov => {
+    const keyData = allKeys[prov.id] || {};
+    const entries = Object.keys(keyData).length > 0
+      ? Object.entries(keyData).sort((a,b) => a[0].localeCompare(b[0]))
+      : Array.from({length: 10}, (_, i) => [`key_${i+1}`, { usedToday: 0, limitPerDay: prov.defaultLimit }]);
 
-    return `<tr>
-      <td>${keyId.replace('_', ' ').toUpperCase()}</td>
-      <td>${usedToday}
-        <span class="mini-bar"><span class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></span></span>
-      </td>
-      <td class="${sisaClass}">${sisa}</td>
-      <td style="color:var(--muted)">${limit}</td>
-      <td style="color:var(--muted);font-size:0.7rem">${data.lastUsed || '—'}</td>
-    </tr>`;
+    const rows = entries.map(([keyId, d]) => {
+      const savedDate = d.todayDate || '';
+      const used = savedDate === today ? (d.usedToday || 0) : (d.usedToday || 0);
+      const limit = d.limitPerDay || prov.defaultLimit;
+      const pct = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
+      const hasUsage = used > 0;
+      const fillClass = hasUsage ? prov.fillClass : 'dkc-fill-zero';
+      const num = keyId.replace(/[^0-9]/g, '') || keyId;
+      return `<div class="dkc-key-row">
+        <span class="dkc-key-name">KEY_${num}</span>
+        <div class="dkc-bar-track"><div class="dkc-bar-fill ${fillClass}" style="width:${pct}%"></div></div>
+        <span class="dkc-key-val ${hasUsage ? 'has-usage' : ''}">${used}/${limit}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="detail-key-card">
+      <div class="dkc-header">
+        <div class="dkc-title">
+          <div class="dkc-icon ${prov.iconClass}">${prov.icon}</div>
+          ${prov.label}
+        </div>
+        <div class="badge badge-idle" id="dkc-badge-${prov.id}">— idle</div>
+      </div>
+      <div class="dkc-sub">detail per key</div>
+      ${rows}
+    </div>`;
   }).join('');
-
-  const totalPct = Math.round((totalUsed / totalLimit) * 100);
-  const totalSisaClass = totalSisa === 0 ? 'sisa-empty' : totalSisa <= 20 ? 'sisa-warn' : 'sisa-ok';
-
-  container.innerHTML = `
-    <table class="key-table">
-      <thead>
-        <tr>
-          <th>Key</th>
-          <th>Dipakai Hari Ini</th>
-          <th>Sisa</th>
-          <th>Limit/Hari</th>
-          <th>Terakhir Dipakai</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-      <tfoot>
-        <tr>
-          <td style="color:var(--muted);font-size:0.7rem">TOTAL</td>
-          <td style="font-weight:700">${totalUsed}
-            <span class="mini-bar"><span class="mini-bar-fill" style="width:${totalPct}%;background:${totalPct>=80?'#E24B4A':totalPct>=50?'#EF9F27':'#69ff94'};"></span></span>
-          </td>
-          <td class="${totalSisaClass}" style="font-weight:700">${totalSisa}</td>
-          <td style="color:var(--muted)">${totalLimit}</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>`;
 }
 
-// ── Init ───────────────────────────────────────────────────────
+// Sync badge status dari provider cards ke detail cards
+function syncDetailBadges(providers) {
+  providers.forEach(p => {
+    const el = document.getElementById('dkc-badge-' + p.name);
+    if (!el) return;
+    const isOk = p.status === 'success';
+    const isError = p.status === 'error';
+    el.className = 'badge ' + (isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle');
+    el.textContent = isOk ? '✅ aktif' : isError ? '❌ limit' : '— idle';
+  });
+}
+
+const _renderAll = renderAll;
+function renderAll(data) {
+  _renderAll(data);
+  syncDetailBadges(data.providers);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-  // Live dot
   const dot = document.createElement('span');
   dot.id = 'dot-live';
   document.getElementById('last-update-text').before(dot);
-
-  // Langsung connect Firebase, sembunyikan config panel
   document.getElementById('config-panel').style.display = 'none';
   initFirebase(FIREBASE_CONFIG);
 });
