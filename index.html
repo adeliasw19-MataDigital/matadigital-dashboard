@@ -69,6 +69,9 @@
       font-family: var(--font-mono);
       font-size: 0.7rem;
       color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     #dot-live {
@@ -76,7 +79,7 @@
       width: 7px; height: 7px;
       border-radius: 50%;
       background: var(--accent3);
-      margin-right: 6px;
+      flex-shrink: 0;
       animation: pulse-dot 2s ease-in-out infinite;
     }
 
@@ -283,7 +286,7 @@
 
     .notif-icon { font-size: 1rem; }
     .notif-text { flex: 1; color: var(--text); }
-    .notif-time { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+    .notif-time { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); white-space: nowrap; }
 
     .loading-state {
       display: flex;
@@ -305,60 +308,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .empty-state {
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-family: var(--font-mono);
-      padding: 1rem 0;
-    }
-
-    #config-panel {
-      position: fixed; inset: 0;
-      background: rgba(10,10,15,0.92);
-      backdrop-filter: blur(8px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .config-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      width: 100%;
-      max-width: 480px;
-      margin: 1rem;
-    }
-
-    .config-box h2 { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); margin-bottom: 0.4rem; }
-    .config-box p { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
-    .config-box label { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.35rem; }
-    .config-box input {
-      width: 100%; background: var(--bg); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.6rem 0.85rem; color: var(--text);
-      font-family: var(--font-mono); font-size: 0.78rem; margin-bottom: 1rem;
-      outline: none; transition: border-color 0.2s;
-    }
-    .config-box input:focus { border-color: var(--accent); }
-
-    .btn-primary {
-      width: 100%; background: var(--accent); color: #000;
-      border: none; border-radius: 8px; padding: 0.7rem;
-      font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
-      cursor: pointer; letter-spacing: 0.05em; transition: opacity 0.2s;
-    }
-    .btn-primary:hover { opacity: 0.85; }
-
-    .btn-secondary {
-      width: 100%; background: transparent; color: var(--muted);
-      border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem;
-      font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer;
-      margin-top: 0.5rem; transition: border-color 0.2s, color 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
     /* ── Detail API Key cards ──────────────────────────── */
     .detail-key-grid {
       display: grid;
@@ -367,7 +316,8 @@
       margin-bottom: 2.5rem;
     }
 
-    @media (max-width: 768px) { .detail-key-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .detail-key-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .detail-key-grid { grid-template-columns: 1fr; } }
 
     .detail-key-card {
       background: var(--card-bg);
@@ -403,12 +353,9 @@
       flex-shrink: 0;
     }
 
-    /* Gemini — biru cyan */
-    .dkc-icon-gemini     { background: #0d2236; color: #00e5ff; border: 1px solid #0e3a56; }
-    /* Hugging Face — kuning amber */
-    .dkc-icon-huggingface{ background: #1f1800; color: #ffcc00; border: 1px solid #3d3000; }
-    /* Sightengine — hijau teal */
-    .dkc-icon-sightengine{ background: #001f1a; color: #00d4aa; border: 1px solid #003d32; }
+    .dkc-icon-gemini      { background: #0d2236; color: #00e5ff; border: 1px solid #0e3a56; }
+    .dkc-icon-huggingface { background: #1f1800; color: #ffcc00; border: 1px solid #3d3000; }
+    .dkc-icon-sightengine { background: #001f1a; color: #00d4aa; border: 1px solid #003d32; }
 
     .dkc-sub {
       font-size: 0.68rem;
@@ -421,7 +368,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 4px 0;
+      padding: 5px 0;
       border-bottom: 1px solid rgba(30,30,46,0.7);
     }
     .dkc-key-row:last-child { border-bottom: none; }
@@ -430,8 +377,15 @@
       font-family: var(--font-mono);
       font-size: 0.65rem;
       color: var(--muted);
-      width: 40px;
+      width: 46px;
       flex-shrink: 0;
+    }
+
+    .dkc-key-status {
+      font-size: 0.6rem;
+      width: 14px;
+      flex-shrink: 0;
+      text-align: center;
     }
 
     .dkc-bar-track {
@@ -447,21 +401,30 @@
       transition: width 0.6s ease;
     }
 
-    /* Bar fill colors per provider */
     .dkc-fill-gemini      { background: #00c8e0; }
     .dkc-fill-huggingface { background: #ffcc00; }
     .dkc-fill-sightengine { background: #00d4aa; }
+    .dkc-fill-danger      { background: var(--accent2); }
     .dkc-fill-zero        { background: #252540; }
 
     .dkc-key-val {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: #666;
-      width: 46px;
+      font-size: 0.62rem;
+      color: #555;
+      width: 52px;
       text-align: right;
       flex-shrink: 0;
     }
     .dkc-key-val.has-usage { color: var(--text); }
+
+    .dkc-last-used {
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
 
     @media (max-width: 600px) {
       .stat-grid { grid-template-columns: 1fr 1fr; }
@@ -471,26 +434,12 @@
 </head>
 <body>
 
-<div id="config-panel">
-  <div class="config-box">
-    <h2>// MATADIGITAL DASHBOARD</h2>
-    <p>Masukkan konfigurasi Firebase project kamu. Data ini disimpan di browser (localStorage) dan tidak dikirim ke mana pun.</p>
-    <label>API Key</label>
-    <input type="text" id="cfg-apikey" placeholder="AIzaSy..." />
-    <label>Auth Domain</label>
-    <input type="text" id="cfg-authdomain" placeholder="matadigital-xxxx.firebaseapp.com" />
-    <label>Database URL</label>
-    <input type="text" id="cfg-dburl" placeholder="https://matadigital-xxxx-default-rtdb.asia-southeast1.firebaseapp.app" />
-    <label>Project ID</label>
-    <input type="text" id="cfg-projectid" placeholder="matadigital-xxxx" />
-    <button class="btn-primary" onclick="saveConfig()">Sambungkan Firebase</button>
-    <button class="btn-secondary" onclick="loadDemoData()">Lihat Demo (tanpa Firebase)</button>
-  </div>
-</div>
-
 <header>
   <div class="logo">MATA<span>DIGITAL</span> // DEV DASHBOARD</div>
-  <div class="last-update"><span id="dot-live"></span><span id="last-update-text">menghubungkan...</span></div>
+  <div class="last-update">
+    <span id="dot-live"></span>
+    <span id="last-update-text">menghubungkan...</span>
+  </div>
 </header>
 
 <main>
@@ -503,14 +452,14 @@
       <div class="stat-sub" id="stat-today-sub">memuat...</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Total Request Bulan Ini</div>
-      <div class="stat-value" id="stat-month">—</div>
-      <div class="stat-sub" id="stat-month-sub">memuat...</div>
+      <div class="stat-label">Total Request (All Time)</div>
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-sub" id="stat-total-sub">memuat...</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Provider Aktif</div>
+      <div class="stat-label">Keys Aktif Hari Ini</div>
       <div class="stat-value" id="stat-active">—</div>
-      <div class="stat-sub">dari 3 provider</div>
+      <div class="stat-sub" id="stat-active-sub">dari total keys</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Success Rate</div>
@@ -519,7 +468,7 @@
     </div>
   </div>
 
-  <div class="section-label">Status Provider & API Key</div>
+  <div class="section-label">Status Provider</div>
   <div class="provider-grid" id="provider-grid">
     <div class="loading-state"><div class="spinner"></div> Memuat data provider...</div>
   </div>
@@ -527,11 +476,11 @@
   <div class="section-label">Grafik Penggunaan</div>
   <div class="charts-grid">
     <div class="chart-card">
-      <div class="chart-title">Request per Hari (7 hari terakhir)</div>
+      <div class="chart-title">Request per Provider (Today)</div>
       <div class="chart-wrap"><canvas id="chart-daily" height="200"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Distribusi Provider</div>
+      <div class="chart-title">Distribusi Provider (All Time)</div>
       <div class="chart-wrap"><canvas id="chart-provider" height="200"></canvas></div>
     </div>
   </div>
@@ -541,7 +490,6 @@
     <div class="loading-state"><div class="spinner"></div> Memuat notifikasi...</div>
   </div>
 
-  <!-- ── Detail API Key (Gemini · Hugging Face · Sightengine) ── -->
   <div class="section-label">Detail API Key</div>
   <div class="detail-key-grid" id="detail-key-grid">
     <div class="loading-state"><div class="spinner"></div> Memuat data key...</div>
@@ -550,306 +498,410 @@
 </main>
 
 <script>
+// ─────────────────────────────────────────────
+//  KONFIGURASI
+// ─────────────────────────────────────────────
 const FIREBASE_CONFIG = {
-  apiKey:      'AIzaSyB6BzPEwCb76jlCl7JWGVaHvUrq4-RC6ac',
-  authDomain:  'matadigital-8d52c.firebaseapp.com',
-  databaseURL: 'https://matadigital-8d52c-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId:   'matadigital-8d52c',
+  apiKey:            'AIzaSyB6BzPEwCb76jlCl7JWGVaHvUrq4-RC6ac',
+  authDomain:        'matadigital-8d52c.firebaseapp.com',
+  databaseURL:       'https://matadigital-8d52c-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId:         'matadigital-8d52c',
+  storageBucket:     'matadigital-8d52c.firebasestorage.app',
+  messagingSenderId: '573349081740',
+  appId:             '1:573349081740:web:28948aeb0367f9dbab81a9',
 };
 
-function saveConfig() {
-  document.getElementById('config-panel').style.display = 'none';
-  initFirebase(FIREBASE_CONFIG);
-}
+// Limit harian per provider
+const DAILY_LIMIT = {
+  gemini:       20,
+  huggingface:  1000,
+  sightengine:  500,
+};
 
-function loadDemoData() {
-  document.getElementById('config-panel').style.display = 'none';
-  renderAll(getDemoData());
-  document.getElementById('last-update-text').textContent = 'MODE DEMO';
-}
+const PROVIDER_NAMES = {
+  gemini:       'Gemini',
+  huggingface:  'Hugging Face',
+  sightengine:  'Sightengine',
+};
 
-function initFirebase(cfg) {
+// ─────────────────────────────────────────────
+//  FIREBASE INIT & SUBSCRIBE
+// ─────────────────────────────────────────────
+function initFirebase() {
   try {
-    if (!firebase.apps.length) firebase.initializeApp(cfg);
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     const db = firebase.database();
     subscribeData(db);
   } catch(e) {
-    console.error(e);
-    showNotif('error', 'Gagal menghubungkan ke Firebase: ' + e.message);
+    console.error('Firebase init error:', e);
+    document.getElementById('last-update-text').textContent = 'error: ' + e.message;
   }
 }
 
 function subscribeData(db) {
-  db.ref('logs').on('value', snap => {
-    const data = snap.val() || {};
-    renderAll(processFirebaseData(data));
+  // Baca logs/api_status secara realtime
+  db.ref('logs/api_status').on('value', snap => {
+    const apiStatus = snap.val() || {};
+    const data = processApiStatus(apiStatus);
+    renderAll(data);
     const now = new Date().toLocaleTimeString('id-ID');
     document.getElementById('last-update-text').textContent = 'update: ' + now;
   }, err => {
-    showNotif('error', 'Firebase error: ' + err.message);
+    console.error('Firebase read error:', err);
+    document.getElementById('last-update-text').textContent = 'error Firebase';
+    document.getElementById('notif-list').innerHTML =
+      `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">Firebase error: ${err.message}</span></div>`;
   });
 }
 
-function processFirebaseData(logs) {
-  const apiStatus  = logs.api_status  || {};
-  const results    = logs.results     || {};
-
+// ─────────────────────────────────────────────
+//  PROSES DATA DARI FIREBASE
+//  Struktur: logs/api_status/{provider}/{keyId}/
+//    { lastStatus, lastUsed, todayDate, todayRequest, totalRequest }
+// ─────────────────────────────────────────────
+function processApiStatus(apiStatus) {
   const today = new Date().toISOString().slice(0, 10);
-  const thisMonth = new Date().toISOString().slice(0, 7);
 
-  const dailyMap = {};
-  const providerCount = {};
-  let todayCount = 0, monthCount = 0;
-  let successCount = 0, totalCount = 0;
+  // allKeys: { gemini: { KEY_1: {...}, KEY_2: {...} }, huggingface: {...}, sightengine: {...} }
+  const allKeys = {};
+  // per-provider summary
+  const providerSummary = {};
+  // global counters
+  let globalTodayTotal = 0;
+  let globalAllTimeTotal = 0;
+  let totalKeys = 0;
+  let activeKeys = 0; // keys dengan todayRequest > 0
+  let successKeys = 0;
+  let errorKeys = 0;
 
-  Object.values(results).forEach(r => {
-    if (!r || !r.timestamp) return;
-    const date = r.timestamp.slice(0, 10);
-    const month = r.timestamp.slice(0, 7);
-    dailyMap[date] = (dailyMap[date] || 0) + 1;
-    providerCount[r.provider] = (providerCount[r.provider] || 0) + 1;
-    if (date === today) todayCount++;
-    if (month === thisMonth) monthCount++;
-    totalCount++;
-  });
+  const providerOrder = ['gemini', 'huggingface', 'sightengine'];
 
-  Object.values(apiStatus).forEach(p => {
-    if (p.lastStatus === 'success') successCount++;
-  });
-  const activeProviders = Object.values(apiStatus).filter(p => p.lastStatus === 'success').length;
+  providerOrder.forEach(provId => {
+    const keysObj = apiStatus[provId] || {};
+    allKeys[provId] = {};
 
-  const daily = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    daily.push({ date: key, count: dailyMap[key] || 0 });
-  }
+    let pTodayTotal = 0;
+    let pAllTimeTotal = 0;
+    let pLastUsed = '—';
+    let pLastStatus = 'idle';
+    let pErrorCount = 0;
+    let pSuccessCount = 0;
+    const limit = DAILY_LIMIT[provId] || 100;
 
-  // Provider list diupdate: gemini, huggingface, sightengine
-  const providers = ['gemini', 'huggingface', 'sightengine'].map(name => {
-    const s = apiStatus[name] || {};
-    return {
-      name, status: s.lastStatus || 'idle',
-      total: s.totalRequest || 0, lastUsed: s.lastUsed || '—',
-      error: s.errorMessage || null, countToday: providerCount[name] || 0,
+    // Iterasi semua key dinamis (KEY_1, KEY_2, ... tidak hardcode)
+    Object.entries(keysObj).forEach(([keyId, keyData]) => {
+      if (!keyData || typeof keyData !== 'object') return;
+      totalKeys++;
+
+      const todayReq  = (keyData.todayDate === today) ? (keyData.todayRequest || 0) : 0;
+      const totalReq  = keyData.totalRequest || 0;
+      const status    = keyData.lastStatus   || 'idle';
+      const lastUsed  = keyData.lastUsed     || '—';
+
+      allKeys[provId][keyId] = {
+        todayRequest:  todayReq,
+        totalRequest:  totalReq,
+        lastStatus:    status,
+        lastUsed:      lastUsed,
+        limitPerDay:   limit,
+      };
+
+      pTodayTotal   += todayReq;
+      pAllTimeTotal += totalReq;
+
+      if (todayReq > 0) activeKeys++;
+
+      if (status === 'success') { successKeys++; pSuccessCount++; }
+      if (status === 'error')   { errorKeys++;   pErrorCount++;   }
+
+      // lastUsed terbaru untuk provider ini
+      if (lastUsed !== '—' && lastUsed > pLastUsed) pLastUsed = lastUsed;
+    });
+
+    // Status provider: error kalau ada key error & 0 success, success kalau ada success, idle kalau kosong
+    if (Object.keys(keysObj).length === 0) {
+      pLastStatus = 'idle';
+    } else if (pSuccessCount > 0) {
+      pLastStatus = 'success';
+    } else if (pErrorCount > 0) {
+      pLastStatus = 'error';
+    } else {
+      pLastStatus = 'idle';
+    }
+
+    globalTodayTotal   += pTodayTotal;
+    globalAllTimeTotal += pAllTimeTotal;
+
+    providerSummary[provId] = {
+      name:        provId,
+      status:      pLastStatus,
+      todayTotal:  pTodayTotal,
+      allTime:     pAllTimeTotal,
+      lastUsed:    pLastUsed,
+      keyCount:    Object.keys(keysObj).length,
+      errorCount:  pErrorCount,
     };
   });
 
-  const allKeys = {
-    gemini:       (apiStatus.gemini       || {}).keys || {},
-    huggingface:  (apiStatus.huggingface  || {}).keys || {},
-    sightengine:  (apiStatus.sightengine  || {}).keys || {},
-  };
+  const successRate = (successKeys + errorKeys) > 0
+    ? Math.round(successKeys / (successKeys + errorKeys) * 100)
+    : 100;
 
   return {
-    todayCount, monthCount, activeProviders,
-    successRate: totalCount ? Math.round((successCount / Object.keys(apiStatus).length || 0) * 100) : 0,
-    daily, providers, providerCount, allKeys,
+    globalTodayTotal,
+    globalAllTimeTotal,
+    totalKeys,
+    activeKeys,
+    successRate,
+    providers: providerOrder.map(id => providerSummary[id] || {
+      name: id, status: 'idle', todayTotal: 0, allTime: 0, lastUsed: '—', keyCount: 0, errorCount: 0
+    }),
+    allKeys,
   };
 }
 
-function getDemoData() {
-  const today = new Date();
-  const daily = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    daily.push({ date: d.toISOString().slice(0,10), count: Math.floor(Math.random()*40)+5 });
-  }
-  return {
-    todayCount: 23, monthCount: 412, activeProviders: 2, successRate: 94,
-    daily,
-    providers: [
-      { name: 'gemini',      status: 'success', total: 210, lastUsed: '2026-05-29 11:10:00', error: null,                   countToday: 15 },
-      { name: 'huggingface', status: 'error',   total: 145, lastUsed: '2026-05-29 10:55:00', error: 'Rate limit exceeded',  countToday: 5  },
-      { name: 'sightengine', status: 'success', total: 57,  lastUsed: '2026-05-29 11:05:00', error: null,                   countToday: 3  },
-    ],
-    providerCount: { gemini: 15, huggingface: 5, sightengine: 3 },
-    allKeys: {
-      gemini: {
-        key_1:  { usedToday: 8,  limitPerDay: 20 },
-        key_2:  { usedToday: 3,  limitPerDay: 20 },
-        key_3:  { usedToday: 1,  limitPerDay: 20 },
-        key_4:  { usedToday: 0,  limitPerDay: 20 },
-        key_5:  { usedToday: 0,  limitPerDay: 20 },
-        key_6:  { usedToday: 0,  limitPerDay: 20 },
-        key_7:  { usedToday: 0,  limitPerDay: 20 },
-        key_8:  { usedToday: 0,  limitPerDay: 20 },
-        key_9:  { usedToday: 0,  limitPerDay: 20 },
-        key_10: { usedToday: 0,  limitPerDay: 20 },
-      },
-      huggingface: {
-        key_1:  { usedToday: 320, limitPerDay: 1000 },
-        key_2:  { usedToday: 150, limitPerDay: 1000 },
-        key_3:  { usedToday: 0,   limitPerDay: 1000 },
-        key_4:  { usedToday: 0,   limitPerDay: 1000 },
-        key_5:  { usedToday: 0,   limitPerDay: 1000 },
-        key_6:  { usedToday: 0,   limitPerDay: 1000 },
-        key_7:  { usedToday: 0,   limitPerDay: 1000 },
-        key_8:  { usedToday: 0,   limitPerDay: 1000 },
-        key_9:  { usedToday: 0,   limitPerDay: 1000 },
-        key_10: { usedToday: 0,   limitPerDay: 1000 },
-      },
-      sightengine: {
-        key_1:  { usedToday: 45, limitPerDay: 500 },
-        key_2:  { usedToday: 12, limitPerDay: 500 },
-        key_3:  { usedToday: 0,  limitPerDay: 500 },
-        key_4:  { usedToday: 0,  limitPerDay: 500 },
-        key_5:  { usedToday: 0,  limitPerDay: 500 },
-        key_6:  { usedToday: 0,  limitPerDay: 500 },
-        key_7:  { usedToday: 0,  limitPerDay: 500 },
-        key_8:  { usedToday: 0,  limitPerDay: 500 },
-        key_9:  { usedToday: 0,  limitPerDay: 500 },
-        key_10: { usedToday: 0,  limitPerDay: 500 },
-      },
-    },
-  };
-}
-
-let chartDaily = null, chartProvider = null;
+// ─────────────────────────────────────────────
+//  RENDER ALL
+// ─────────────────────────────────────────────
+let chartBar = null, chartDoughnut = null;
 
 function renderAll(data) {
   renderStats(data);
   renderProviders(data.providers);
   renderCharts(data);
   renderNotifs(data.providers);
-  renderDetailKeys(data.allKeys || {});
-  syncDetailBadges(data.providers);
+  renderDetailKeys(data.allKeys);
 }
 
 function renderStats(data) {
-  document.getElementById('stat-today').textContent     = data.todayCount;
-  document.getElementById('stat-today-sub').textContent = 'request hari ini';
-  document.getElementById('stat-month').textContent     = data.monthCount;
-  document.getElementById('stat-month-sub').textContent = 'request bulan ini';
-  document.getElementById('stat-active').textContent    = data.activeProviders;
-  document.getElementById('stat-rate').textContent      = data.successRate + '%';
-  document.getElementById('stat-rate-sub').textContent  = 'success rate';
+  document.getElementById('stat-today').textContent    = data.globalTodayTotal.toLocaleString('id-ID');
+  document.getElementById('stat-today-sub').textContent = 'request hari ini (semua provider)';
+
+  document.getElementById('stat-total').textContent    = data.globalAllTimeTotal.toLocaleString('id-ID');
+  document.getElementById('stat-total-sub').textContent = 'total request all time';
+
+  document.getElementById('stat-active').textContent   = data.activeKeys;
+  document.getElementById('stat-active-sub').textContent = `dari ${data.totalKeys} total keys`;
+
+  document.getElementById('stat-rate').textContent     = data.successRate + '%';
+  document.getElementById('stat-rate-sub').textContent  = 'success rate (berdasarkan lastStatus)';
 }
 
 function renderProviders(providers) {
   const grid = document.getElementById('provider-grid');
   grid.innerHTML = '';
-  const names = { gemini: 'Gemini', huggingface: 'Hugging Face', sightengine: 'Sightengine' };
+
   providers.forEach(p => {
     const isOk    = p.status === 'success';
     const isError = p.status === 'error';
     const badgeClass = isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle';
-    const badgeText  = isOk ? '✅ AKTIF' : isError ? '❌ LIMIT' : '— IDLE';
-    const quotaPct = Math.min(100, Math.round((p.total % 1000) / 10));
-    const barClass = quotaPct > 80 ? 'danger' : '';
+    const badgeText  = isOk ? '✅ AKTIF' : isError ? '❌ ERROR' : '— IDLE';
+
+    const limit = DAILY_LIMIT[p.name] || 100;
+    const totalDailyCapacity = (p.keyCount || 0) * limit;
+    const pct = totalDailyCapacity > 0
+      ? Math.min(100, Math.round(p.todayTotal / totalDailyCapacity * 100))
+      : 0;
+    const barClass = pct > 80 ? 'danger' : '';
+
     grid.innerHTML += `
       <div class="provider-card">
         <div class="provider-header">
-          <div class="provider-name">${names[p.name] || p.name}</div>
+          <div class="provider-name">${PROVIDER_NAMES[p.name] || p.name}</div>
           <div class="badge ${badgeClass}">${badgeText}</div>
         </div>
         <div class="provider-stats">
-          <div class="p-stat"><div class="p-stat-label">Total Request</div><div class="p-stat-value">${p.total.toLocaleString()}</div></div>
-          <div class="p-stat"><div class="p-stat-label">Hari Ini</div><div class="p-stat-value">${p.countToday}</div></div>
+          <div class="p-stat">
+            <div class="p-stat-label">Request Hari Ini</div>
+            <div class="p-stat-value">${p.todayTotal.toLocaleString('id-ID')}</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-label">All Time</div>
+            <div class="p-stat-value">${p.allTime.toLocaleString('id-ID')}</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-label">Jumlah Keys</div>
+            <div class="p-stat-value">${p.keyCount}</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-label">Error Keys</div>
+            <div class="p-stat-value" style="color:${p.errorCount > 0 ? 'var(--accent2)' : 'var(--text)'}">${p.errorCount}</div>
+          </div>
           <div class="p-stat" style="grid-column:span 2">
             <div class="p-stat-label">Terakhir Dipakai</div>
             <div class="p-stat-value" style="font-size:0.8rem">${p.lastUsed}</div>
           </div>
         </div>
-        ${p.error ? `<div style="margin-top:0.75rem;font-size:0.75rem;color:var(--accent2);background:rgba(255,77,109,0.07);border-radius:6px;padding:6px 10px;">⚠️ ${p.error}</div>` : ''}
         <div class="quota-bar-wrap">
-          <div class="quota-bar-label"><span>Estimasi Pemakaian</span><span>${quotaPct}%</span></div>
-          <div class="quota-bar"><div class="quota-bar-fill ${barClass}" style="width:${quotaPct}%"></div></div>
+          <div class="quota-bar-label">
+            <span>Kapasitas Harian (${p.todayTotal} / ${totalDailyCapacity})</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="quota-bar"><div class="quota-bar-fill ${barClass}" style="width:${pct}%"></div></div>
         </div>
       </div>`;
   });
 }
 
 function renderCharts(data) {
-  const labels = data.daily.map(d => { const [,m,dd] = d.date.split('-'); return `${dd}/${m}`; });
-  const counts = data.daily.map(d => d.count);
-  if (chartDaily) chartDaily.destroy();
+  // Bar chart: todayRequest per provider
+  const barLabels = data.providers.map(p => PROVIDER_NAMES[p.name] || p.name);
+  const barData   = data.providers.map(p => p.todayTotal);
+
+  if (chartBar) chartBar.destroy();
   const ctx1 = document.getElementById('chart-daily').getContext('2d');
-  chartDaily = new Chart(ctx1, {
+  chartBar = new Chart(ctx1, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Request', data: counts, backgroundColor: 'rgba(0,229,255,0.15)', borderColor: '#00e5ff', borderWidth: 1.5, borderRadius: 4 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: {
-      x: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } } },
-      y: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true },
-    }}
+    data: {
+      labels: barLabels,
+      datasets: [{
+        label: 'Request Hari Ini',
+        data: barData,
+        backgroundColor: ['rgba(0,229,255,0.2)', 'rgba(255,204,0,0.2)', 'rgba(0,212,170,0.2)'],
+        borderColor:     ['#00e5ff', '#ffcc00', '#00d4aa'],
+        borderWidth: 1.5,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 11 } } },
+        y: { grid: { color: '#1e1e2e' }, ticks: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 } }, beginAtZero: true },
+      }
+    }
   });
-  const pLabels = Object.keys(data.providerCount);
-  const pCounts = Object.values(data.providerCount);
-  if (chartProvider) chartProvider.destroy();
+
+  // Doughnut: allTime per provider
+  const dLabels = data.providers.filter(p => p.allTime > 0).map(p => PROVIDER_NAMES[p.name] || p.name);
+  const dData   = data.providers.filter(p => p.allTime > 0).map(p => p.allTime);
+
+  if (chartDoughnut) chartDoughnut.destroy();
   const ctx2 = document.getElementById('chart-provider').getContext('2d');
-  chartProvider = new Chart(ctx2, {
+  chartDoughnut = new Chart(ctx2, {
     type: 'doughnut',
-    data: { labels: pLabels, datasets: [{ data: pCounts, backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,204,0,0.7)', 'rgba(0,212,170,0.7)'], borderColor: '#0a0a0f', borderWidth: 3 }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 } } }, cutout: '65%' }
+    data: {
+      labels: dLabels.length ? dLabels : ['Belum ada data'],
+      datasets: [{
+        data: dData.length ? dData : [1],
+        backgroundColor: ['rgba(0,229,255,0.7)', 'rgba(255,204,0,0.7)', 'rgba(0,212,170,0.7)'],
+        borderColor: '#0a0a0f',
+        borderWidth: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#5a5a7a', font: { family: 'Space Mono', size: 10 }, padding: 16 }
+        }
+      },
+      cutout: '65%',
+    }
   });
 }
 
 function renderNotifs(providers) {
   const list = document.getElementById('notif-list');
-  const names = { gemini: 'Gemini', huggingface: 'Hugging Face', sightengine: 'Sightengine' };
   const notifs = [];
+
   providers.forEach(p => {
-    if (p.status === 'error') notifs.push({ type: 'error', icon: '🚨', text: `<strong>${names[p.name]}</strong> — API key limit atau error: ${p.error || 'unknown'}`, time: p.lastUsed });
+    if (p.status === 'error') {
+      notifs.push({
+        cls: '',
+        icon: '🚨',
+        text: `<strong>${PROVIDER_NAMES[p.name]}</strong> — ${p.errorCount} key dalam status error`,
+        time: p.lastUsed,
+      });
+    }
+    const limit = DAILY_LIMIT[p.name] || 100;
+    const capacity = p.keyCount * limit;
+    if (capacity > 0 && p.keyCount > 0) {
+      const pct = Math.round(p.todayTotal / capacity * 100);
+      if (pct >= 80) {
+        notifs.push({
+          cls: '',
+          icon: '⚠️',
+          text: `<strong>${PROVIDER_NAMES[p.name]}</strong> — kapasitas harian ${pct}% terpakai`,
+          time: p.lastUsed,
+        });
+      }
+    }
   });
-  if (notifs.length === 0) notifs.push({ type: 'ok', icon: '✅', text: 'Semua provider berjalan normal.', time: new Date().toLocaleTimeString('id-ID') });
-  list.innerHTML = notifs.map(n => `<div class="notif-item ${n.type === 'error' ? '' : n.type}"><span class="notif-icon">${n.icon}</span><span class="notif-text">${n.text}</span><span class="notif-time">${n.time}</span></div>`).join('');
+
+  if (notifs.length === 0) {
+    notifs.push({
+      cls: 'ok',
+      icon: '✅',
+      text: 'Semua provider berjalan normal. Tidak ada peringatan.',
+      time: new Date().toLocaleTimeString('id-ID'),
+    });
+  }
+
+  list.innerHTML = notifs.map(n =>
+    `<div class="notif-item ${n.cls}">
+      <span class="notif-icon">${n.icon}</span>
+      <span class="notif-text">${n.text}</span>
+      <span class="notif-time">${n.time}</span>
+    </div>`
+  ).join('');
 }
 
-function showNotif(type, msg) {
-  document.getElementById('notif-list').innerHTML = `<div class="notif-item"><span class="notif-icon">⚠️</span><span class="notif-text">${msg}</span></div>`;
-}
-
-// ── Render Detail Key Cards ────────────────────────────────────
+// ─────────────────────────────────────────────
+//  RENDER DETAIL KEY CARDS
+//  Dinamis: semua key dari Firebase ditampilkan,
+//  tidak hardcode jumlah key.
+// ─────────────────────────────────────────────
 function renderDetailKeys(allKeys) {
   const grid = document.getElementById('detail-key-grid');
-  const today = new Date().toISOString().slice(0, 10);
 
-  const providers = [
-    {
-      id: 'gemini',
-      label: 'Gemini',
-      icon: 'G',
-      iconClass: 'dkc-icon-gemini',
-      fillClass: 'dkc-fill-gemini',
-      defaultLimit: 20,
-    },
-    {
-      id: 'huggingface',
-      label: 'Hugging Face',
-      icon: '🤗',
-      iconClass: 'dkc-icon-huggingface',
-      fillClass: 'dkc-fill-huggingface',
-      defaultLimit: 1000,
-    },
-    {
-      id: 'sightengine',
-      label: 'Sightengine',
-      icon: '👁',
-      iconClass: 'dkc-icon-sightengine',
-      fillClass: 'dkc-fill-sightengine',
-      defaultLimit: 500,
-    },
+  const providerDefs = [
+    { id: 'gemini',       label: 'Gemini',       icon: 'G',  iconClass: 'dkc-icon-gemini',      fillClass: 'dkc-fill-gemini'      },
+    { id: 'huggingface',  label: 'Hugging Face',  icon: '🤗', iconClass: 'dkc-icon-huggingface', fillClass: 'dkc-fill-huggingface' },
+    { id: 'sightengine',  label: 'Sightengine',   icon: '👁', iconClass: 'dkc-icon-sightengine', fillClass: 'dkc-fill-sightengine' },
   ];
 
-  grid.innerHTML = providers.map(prov => {
+  grid.innerHTML = providerDefs.map(prov => {
     const keyData = allKeys[prov.id] || {};
-    const entries = Object.keys(keyData).length > 0
-      ? Object.entries(keyData).sort((a,b) => a[0].localeCompare(b[0]))
-      : Array.from({length: 10}, (_, i) => [`key_${i+1}`, { usedToday: 0, limitPerDay: prov.defaultLimit }]);
+    const entries = Object.entries(keyData).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }));
+    const limit   = DAILY_LIMIT[prov.id] || 100;
 
-    const rows = entries.map(([keyId, d]) => {
-      const used  = d.usedToday || 0;
-      const limit = d.limitPerDay || prov.defaultLimit;
-      const pct   = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
-      const hasUsage  = used > 0;
-      const fillClass = hasUsage ? prov.fillClass : 'dkc-fill-zero';
-      const num = keyId.replace(/[^0-9]/g, '') || keyId;
-      return `<div class="dkc-key-row">
-        <span class="dkc-key-name">KEY_${num}</span>
-        <div class="dkc-bar-track"><div class="dkc-bar-fill ${fillClass}" style="width:${pct}%"></div></div>
-        <span class="dkc-key-val ${hasUsage ? 'has-usage' : ''}">${used}/${limit}</span>
-      </div>`;
-    }).join('');
+    // Hitung status badge dari data keys
+    const hasSuccess = entries.some(([,d]) => d.lastStatus === 'success');
+    const hasError   = entries.some(([,d]) => d.lastStatus === 'error');
+    const badgeClass = hasSuccess ? 'badge-ok' : hasError ? 'badge-limit' : 'badge-idle';
+    const badgeText  = hasSuccess ? '✅ aktif' : hasError ? '❌ error' : '— idle';
+
+    // Last used terbaru dari semua keys provider ini
+    const lastUsedTimes = entries.map(([,d]) => d.lastUsed).filter(t => t && t !== '—').sort().reverse();
+    const lastUsedDisplay = lastUsedTimes[0] || '—';
+
+    let rows = '';
+
+    if (entries.length === 0) {
+      rows = `<div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);padding:8px 0">Belum ada data key</div>`;
+    } else {
+      rows = entries.map(([keyId, d]) => {
+        const used    = d.todayRequest || 0;
+        const total   = d.totalRequest || 0;
+        const status  = d.lastStatus   || 'idle';
+        const pct     = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
+        const hasUsage = used > 0;
+        const isDanger = pct >= 90;
+        const fillClass = isDanger ? 'dkc-fill-danger' : hasUsage ? prov.fillClass : 'dkc-fill-zero';
+        const statusIcon = status === 'success' ? '✓' : status === 'error' ? '✗' : '·';
+        const statusColor = status === 'success' ? 'color:#69ff94' : status === 'error' ? 'color:#ff4d6d' : 'color:#5a5a7a';
+
+        return `<div class="dkc-key-row">
+          <span class="dkc-key-name">${keyId}</span>
+          <span class="dkc-key-status" style="${statusColor}">${statusIcon}</span>
+          <div class="dkc-bar-track"><div class="dkc-bar-fill ${fillClass}" style="width:${pct}%"></div></div>
+          <span class="dkc-key-val ${hasUsage ? 'has-usage' : ''}">${used}/${limit}</span>
+        </div>`;
+      }).join('');
+    }
 
     return `<div class="detail-key-card">
       <div class="dkc-header">
@@ -857,32 +909,20 @@ function renderDetailKeys(allKeys) {
           <div class="dkc-icon ${prov.iconClass}">${prov.icon}</div>
           ${prov.label}
         </div>
-        <div class="badge badge-idle" id="dkc-badge-${prov.id}">— idle</div>
+        <div class="badge ${badgeClass}">${badgeText}</div>
       </div>
-      <div class="dkc-sub">detail per key</div>
+      <div class="dkc-sub">${entries.length} key · limit ${limit.toLocaleString('id-ID')}/hari</div>
       ${rows}
+      ${lastUsedDisplay !== '—' ? `<div class="dkc-last-used">last used: ${lastUsedDisplay}</div>` : ''}
     </div>`;
   }).join('');
 }
 
-function syncDetailBadges(providers) {
-  const names = { gemini: 'gemini', huggingface: 'huggingface', sightengine: 'sightengine' };
-  providers.forEach(p => {
-    const el = document.getElementById('dkc-badge-' + p.name);
-    if (!el) return;
-    const isOk    = p.status === 'success';
-    const isError = p.status === 'error';
-    el.className  = 'badge ' + (isOk ? 'badge-ok' : isError ? 'badge-limit' : 'badge-idle');
-    el.textContent = isOk ? '✅ aktif' : isError ? '❌ limit' : '— idle';
-  });
-}
-
+// ─────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  const dot = document.createElement('span');
-  dot.id = 'dot-live';
-  document.getElementById('last-update-text').before(dot);
-  document.getElementById('config-panel').style.display = 'none';
-  initFirebase(FIREBASE_CONFIG);
+  initFirebase();
 });
 </script>
 </body>
